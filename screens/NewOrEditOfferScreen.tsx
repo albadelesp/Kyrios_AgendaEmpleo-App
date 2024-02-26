@@ -1,37 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { SafeAreaView, StyleSheet, ScrollView, Text, View, Alert,Platform } from 'react-native';
+import { SafeAreaView, StyleSheet, ScrollView, Text, View, Alert, Platform } from 'react-native';
 import { Input, Button, Switch } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
-import { GooglePlacesAutocomplete , GooglePlacesAutocompleteRef} from 'react-native-google-places-autoComplete';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'; // Corrección de importación
 import { collection, addDoc, updateDoc, doc } from "firebase/firestore"; 
 import { db } from "../config/firebase";
 import { StackScreenProps } from '@react-navigation/stack';
 import { Offer } from '../models/Offer';
 import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-notifications';
-import  Constants  from 'expo-constants';
+import Constants from 'expo-constants';
 import { Subscription } from 'expo-notifications';
 
 const auth = getAuth();
 
-const today=new Date()
-const day=today.getDate().toLocaleString().padStart(2,'0')
-const month=(today.getMonth() + 1 ).toLocaleString().padStart(2, '0')
-const year= today.getFullYear();
-  
-const formatoCompleto= `${day}-${month}-${year}`
-
-
-
-
-// Can use this function below or use Expo's Push Notification Tool from: https://expo.dev/notifications
-
-
+const today = new Date();
+const day = today.getDate().toLocaleString().padStart(2, '0');
+const month = (today.getMonth() + 1).toLocaleString().padStart(2, '0');
+const year = today.getFullYear();
+const formatoCompleto = `${day}-${month}-${year}`;
 
 const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, route }) => {
-
   
-
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -136,8 +125,8 @@ const offer : Offer = route?.params?.offer;
 const isEditMode = offer != undefined;
 const screenTitle = isEditMode ? 'Edición oferta' : 'Nueva oferta';
   
-const jobRefAddress=useRef<React.Ref<GooglePlacesAutocompleteRef>>(null);
-const interviewRefAddress=useRef<React.Ref<GooglePlacesAutocompleteRef>>(null);
+const jobRefAddress = useRef<typeof GooglePlacesAutocomplete | null>(null);
+const interviewRefAddress=useRef<typeof GooglePlacesAutocomplete | null>(null);
 
 const [expoPushToken, setExpoPushToken] = React.useState('');
 const [notification, setNotification] = useState(false);
@@ -212,8 +201,8 @@ useEffect(() => {
 
     });
     
-    const jobRefAddress = useRef<GooglePlacesAutocompleteRef | null>(null);
-    const interviewRefAddress = useRef<GooglePlacesAutocompleteRef | null>(null);
+    const jobRefAddress = useRef<typeof GooglePlacesAutocomplete | null>(null);
+    const interviewRefAddress = useRef<typeof GooglePlacesAutocomplete | null>(null);
     jobRefAddress.current?.setAddressText(offer.job_address);
     if (offer.interview_address) {
       interviewRefAddress.current?.setAddressText(offer.interview_address);
