@@ -1,17 +1,11 @@
 import React, { useEffect }  from 'react';
-
 import { SafeAreaView, StyleSheet, ScrollView, Text, View, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-//import kyrios from '../assets/kyrios.jpg';
 import { firebase } from '@react-native-firebase/messaging';
 
 const auth = getAuth();
-/////Token mensage
-const kyriosImage = require('../../assets/kyrios.jpg');
-
-
 
 const LoginScreen = () => {
   const [value, setValue] = React.useState({
@@ -51,10 +45,6 @@ const LoginScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContentContainer}>
-        <View style={styles.imageContainer}>
-          <Image source={kyriosImage} style={styles.image} />
-        </View>
-
         {!!value.error && <View style={styles.error}><Text>{value.error}</Text></View>}
 
         <View style={styles.controls}>
@@ -91,7 +81,6 @@ const LoginScreen = () => {
 }
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1
   },
@@ -107,18 +96,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center'
-  },
-
-  imageContainer: {
-    flex: 1,
-    flexGrow: 4,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-
-  image: {
-    width: 200,
-    height: 200,
   },
 
   controls: {

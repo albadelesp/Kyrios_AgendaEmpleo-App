@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
 import { StackScreenProps } from '@react-navigation/stack';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+// @ts-ignore
 import kyrios from '../assets/kyrios.jpg';
 //const kyrios = require('../../assets/kyrios.jpg');
 
