@@ -1,4 +1,3 @@
-import { useIsFocused } from "@react-navigation/native"; 
 import React from 'react';
 import { StyleSheet, Text, View, FlatList, Alert } from 'react-native';
 import { Button } from 'react-native-elements';
@@ -7,12 +6,12 @@ import { Offer } from '../models/Offer';
 import { collection, doc, getDocs, deleteDoc } from "firebase/firestore"; 
 import { getAuth } from 'firebase/auth';
 import { db } from '../config/firebase';
+import { useIsFocused } from "@react-navigation/native"; 
+import { useNavigation } from '@react-navigation/native'; 
 
 const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
-
   const [refresher, setRefresher] = React.useState(false);
   const [offers, setOffers] = React.useState<Offer[] | undefined>(undefined);
-
   const focus = useIsFocused();
 
   async function deleteOffer(docId: string) {
@@ -155,6 +154,15 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
           )
         }}
       />
+      {/* Botón para ir a la pantalla de chat */}
+      <Button 
+        title="Ir al Chat"
+        buttonStyle={styles.buttonGoToChat}
+        titleStyle={{ color: '#111822' }}
+        onPress={() => {
+          navigation.navigate('Chat')
+        }}
+      />
     </View>
   );
 }
@@ -201,8 +209,13 @@ const styles = StyleSheet.create({
   buttonNewOffer: {
     backgroundColor: '#FFA40B',
     width: '100%'
+  },
+
+  buttonGoToChat: {
+    backgroundColor: '#FFA40B',
+    width: '100%',
+    marginBottom: 20
   }
-  
 });
 
 export default OffersScreen;

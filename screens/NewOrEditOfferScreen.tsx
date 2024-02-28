@@ -10,6 +10,7 @@ import { Offer } from '../models/Offer';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Subscription } from 'expo-notifications';
+import { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
 
 const auth = getAuth();
 
@@ -125,67 +126,59 @@ const offer : Offer = route?.params?.offer;
 const isEditMode = offer != undefined;
 const screenTitle = isEditMode ? 'Edición oferta' : 'Nueva oferta';
   
-const jobRefAddress = useRef<typeof GooglePlacesAutocomplete | null>(null);
-const interviewRefAddress=useRef<typeof GooglePlacesAutocomplete | null>(null);
+const jobRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
+const interviewRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
 
 const [expoPushToken, setExpoPushToken] = React.useState('');
-const [notification, setNotification] = useState(false);
+const [notification, setNotification] = useState<Notifications.Notification | boolean>(false);
 const notificationListener = useRef();
 const responseListener = useRef();
 
 useEffect(() => {
-
-    
-  registerForPushNotificationsAsync().then(token => {
-    if (token) {
-      setExpoPushToken(token);
-    } else {
-      // Manejar el caso en el que token es undefined
-      console.error('El token de Expo Push es undefined');
+  const registerForNotifications = async () => {
+    try {
+      const token = await registerForPushNotificationsAsync();
+      if (token) {
+        setExpoPushToken(token);
+      } else {
+        console.error('El token de Expo Push es undefined');
+      }
+    } catch (error) {
+      console.error('Error al registrar para notificaciones:', error);
     }
-  });
-  
+  };
 
+  registerForNotifications();
 
-  const [notification, setNotification] = useState<Notifications.Notification | boolean>(false);
-  const notificationListener = useRef<undefined | Subscription>(undefined);
-  
-  notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+  const notificationListener = Notifications.addNotificationReceivedListener(notification => {
     setNotification(notification);
   });
-  
-  const responseListener: React.MutableRefObject<Subscription | undefined> = useRef(undefined);
-  responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+
+  const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
     console.log(response);
   });
 
   return () => {
-    if (notificationListener.current) {
-      Notifications.removeNotificationSubscription(notificationListener.current);
-    }
-    if (responseListener.current) {
-      Notifications.removeNotificationSubscription(responseListener.current);
-    }
+    Notifications.removeNotificationSubscription(notificationListener);
+    Notifications.removeNotificationSubscription(responseListener);
   };
-  
-
-  
 }, []);
+
 
 
   
 
 useEffect(() => {
   navigation.setOptions({ headerTitle: screenTitle });
-  if (isEditMode) {
+  if (isEditMode && offer) {
     setValue({
-      position: offer.position,
-      company: offer.company,
-      schedule: offer.schedule,
-      address: offer.job_address,
+      position: offer.position || '',
+      company: offer.company || '',
+      schedule: offer.schedule || '',
+      address: offer.job_address || '',
       latitude: offer.job_latitude,
       longitude: offer.job_longitude,
-      registration_date: offer.registration_date,
+      registration_date: offer.registration_date || '',
 
       mandatory_education: offer.mandatory_education,
       required_education: offer.required_education,
@@ -198,21 +191,10 @@ useEffect(() => {
       interview_address: offer.interview_address || '',
       interview_latitude: offer.interview_latitude,
       interview_longitude: offer.interview_longitude,
-
     });
-    
-    const jobRefAddress = useRef<typeof GooglePlacesAutocomplete | null>(null);
-    const interviewRefAddress = useRef<typeof GooglePlacesAutocomplete | null>(null);
-    jobRefAddress.current?.setAddressText(offer.job_address);
-    if (offer.interview_address) {
-      interviewRefAddress.current?.setAddressText(offer.interview_address);
-    } else {
-      interviewRefAddress.current?.setAddressText('');
-    }
-    
-     
   }
-}, []);
+}, [isEditMode, offer]);
+
 
 
 
@@ -439,9 +421,7 @@ useEffect(() => {
               ref={jobRefAddress}
               placeholder="Introduce ubicación del sitio de trabajo..."
               minLength={2}
-              autoFocus={false}
               fetchDetails={true}
-              returnKeyType={'default'}
               debounce={300}
               query={{
                 key: "AIzaSyCoh32ThA1G5ItPhvqI7U2fZ5hUhur217I",
@@ -562,9 +542,7 @@ useEffect(() => {
               ref={interviewRefAddress}
               placeholder="Introduce ubicación de la entrevista..."
               minLength={2}
-              autoFocus={false}
               fetchDetails={true}
-              returnKeyType={'default'}
               debounce={300}
               query={{
                 key: "AIzaSyCoh32ThA1G5ItPhvqI7U2fZ5hUhur217I",
