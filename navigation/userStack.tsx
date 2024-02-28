@@ -5,10 +5,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import OffersScreen from '../screens/OffersScreen';
-
-import { getAuth, signOut } from 'firebase/auth';
 import NewOrEditOfferScreen from '../screens/NewOrEditOfferScreen';
 import OfferDetailScreen from '../screens/OfferDetailScreen';
+import ChatScreen from '../screens/ChatScreen';
+
+import { getAuth, signOut } from 'firebase/auth';
 
 const Stack = createStackNavigator();
 
@@ -80,6 +81,24 @@ export default function UserStack() {
           component={OfferDetailScreen}
           options={{
             headerTitle: 'Detalle Oferta',
+            headerRight: () => (
+              <View style={{ paddingLeft: 10, paddingRight: 10 }}>
+                <Button
+                  onPress={() => logout()}
+                  title="Logout"
+                  buttonStyle={{ backgroundColor: '#111822' }}
+                  titleStyle={{ color: '#FFA40B' }}
+                />
+              </View>
+            )
+          }}
+        />
+        
+        <Stack.Screen
+          name="Chat"
+          component={ChatScreen}
+          options={{
+            headerTitle: 'Chat',
             headerRight: () => (
               <View style={{ paddingLeft: 10, paddingRight: 10 }}>
                 <Button
