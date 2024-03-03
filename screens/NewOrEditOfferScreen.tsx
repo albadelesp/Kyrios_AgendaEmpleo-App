@@ -288,6 +288,21 @@ useEffect(() => {
     return true;
   }
 
+  const isValidDate = (date_text: string, hour_text: string) => {
+  const splitted = hour_text.split(":")
+  const partesFecha = date_text.split('-');
+  const fechaIntroducida = new Date(parseInt(partesFecha[2]),parseInt(partesFecha[1]) - 1, parseInt(partesFecha[0]), 
+                                    parseInt(splitted[0]),parseInt(splitted[1])); 
+
+  const fechaActual = new Date();
+
+  if (fechaIntroducida < fechaActual) {
+
+    return false;
+  }
+  return true;
+  }
+
   const isValidScheduleText = (schedule_text: string) => {
     return schedule_text.trim().length > 0;
   }
@@ -354,8 +369,15 @@ useEffect(() => {
     /* Validación Seccion Entrevista */
     const needToValidateInterviewDate = value.interview_date;
     if (needToValidateInterviewDate && !isValidTextDate(value.interview_date)) {
-      error = 'Fecha de entrevista erronea. formato 01-12-2020';
+      error = 'Fecha de entrevista erronea. Formato 01-12-2020';
       return;
+    }
+
+    const needToComprobateInterviewDate = value.interview_date;
+    if(needToComprobateInterviewDate && !isValidDate(value.interview_date,value.interview_hour)) {
+
+      error = 'Fecha de entrevista erronea. Introduce una fecha mayor. ';
+      return
     }
 
     const needToValidateInterviewHour = value.interview_hour;
