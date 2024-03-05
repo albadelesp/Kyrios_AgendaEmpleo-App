@@ -1,4 +1,6 @@
 import 'dotenv/config'; // Asumiendo que este import está en un archivo .ts o .js, no en un archivo .json
+import { useState, useEffect } from 'react';
+import * as LocalAuthentication from 'expo-local-authentication'
 
 export default {
   "expo": {

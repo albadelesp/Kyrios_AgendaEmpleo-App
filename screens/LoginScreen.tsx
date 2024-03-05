@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { firebase } from '@react-native-firebase/messaging';
+import kyrios from '../assets/kyrios.jpg';
 
 const auth = getAuth();
 
@@ -47,9 +48,13 @@ const LoginScreen = () => {
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContentContainer}>
         {!!value.error && <View style={styles.error}><Text>{value.error}</Text></View>}
 
+        <View style={styles.imageContainer}>
+          <Image source={kyrios} style={styles.image} />
+        </View>
+
         <View style={styles.controls}>
           <Input
-            autoComplete='off'
+            autoComplete='email'
             placeholder='Email'
             containerStyle={styles.control}
             value={value.email}
@@ -61,7 +66,7 @@ const LoginScreen = () => {
           />
 
           <Input
-            autoComplete='off'
+            autoComplete='password'
             placeholder='Contraseña'
             containerStyle={styles.control}
             value={value.password}
@@ -96,6 +101,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+
+  imageContainer: {
+    flex: 1,
+    flexGrow: 4,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+
+  image: {
+    width: 200,
+    height: 200,
   },
 
   controls: {
