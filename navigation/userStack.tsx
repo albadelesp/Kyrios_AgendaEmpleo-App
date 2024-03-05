@@ -3,13 +3,13 @@ import { Alert, View } from 'react-native';
 import { Button } from 'react-native-elements';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { getAuth, signOut } from 'firebase/auth';
 
 import OffersScreen from '../screens/OffersScreen';
 import NewOrEditOfferScreen from '../screens/NewOrEditOfferScreen';
 import OfferDetailScreen from '../screens/OfferDetailScreen';
 import ChatScreen from '../screens/ChatScreen';
-
-import { getAuth, signOut } from 'firebase/auth';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -25,7 +25,7 @@ async function logout() {
           try {
             await signOut(auth);
           } catch (err) {
-            console.log("An error has ocurred");
+            console.log("An error has occurred");
           }
         },
       },
@@ -44,27 +44,20 @@ export default function UserStack() {
         <Stack.Screen
           name="Offers"
           component={OffersScreen}
-          options={{
+          options={({ navigation }) => ({
             headerTitle: 'Registro de Ofertas',
-            headerRight: () => (
-              <View style={{ paddingLeft: 10, paddingRight: 10 }}>
+            headerLeft: () => (
+              <View style={{ paddingLeft: 10 }}>
                 <Button
-                  onPress={() => logout()}
-                  title="Logout"
-                  buttonStyle={{ backgroundColor: '#111822' }}
+                  onPress={() => navigation.navigate('ProfileScreen')}
+                  title="Perfil"
+                  type="clear"
                   titleStyle={{ color: '#FFA40B' }}
                 />
               </View>
-            )
-          }}
-        />
-        <Stack.Screen
-          name="NewOrEditOffer"
-          component={NewOrEditOfferScreen}
-          options={({ route }) => ({
-            headerTitle: 'Nueva Oferta o Edición de Oferta',
+            ),
             headerRight: () => (
-              <View style={{ paddingLeft: 10, paddingRight: 10 }}>
+              <View style={{ paddingRight: 10 }}>
                 <Button
                   onPress={() => logout()}
                   title="Logout"
@@ -75,14 +68,30 @@ export default function UserStack() {
             )
           })}
         />
-
+        <Stack.Screen
+          name="NewOrEditOffer"
+          component={NewOrEditOfferScreen}
+          options={({ navigation }) => ({
+            headerTitle: 'Nueva Oferta o Edición de Oferta',
+            headerRight: () => (
+              <View style={{ paddingRight: 10 }}>
+                <Button
+                  onPress={() => logout()}
+                  title="Logout"
+                  buttonStyle={{ backgroundColor: '#111822' }}
+                  titleStyle={{ color: '#FFA40B' }}
+                />
+              </View>
+            )
+          })}
+        />
         <Stack.Screen
           name="OfferDetail"
           component={OfferDetailScreen}
           options={{
             headerTitle: 'Detalle Oferta',
             headerRight: () => (
-              <View style={{ paddingLeft: 10, paddingRight: 10 }}>
+              <View style={{ paddingRight: 10 }}>
                 <Button
                   onPress={() => logout()}
                   title="Logout"
@@ -93,14 +102,13 @@ export default function UserStack() {
             )
           }}
         />
-        
         <Stack.Screen
           name="Chat"
           component={ChatScreen}
           options={{
             headerTitle: 'Chat',
             headerRight: () => (
-              <View style={{ paddingLeft: 10, paddingRight: 10 }}>
+              <View style={{ paddingRight: 10 }}>
                 <Button
                   onPress={() => logout()}
                   title="Logout"
@@ -109,6 +117,13 @@ export default function UserStack() {
                 />
               </View>
             )
+          }}
+        />
+        <Stack.Screen
+          name="ProfileScreen"
+          component={ProfileScreen}
+          options={{
+            headerTitle: 'Perfil',
           }}
         />
       </Stack.Navigator>
