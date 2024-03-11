@@ -10,6 +10,7 @@ import NewOrEditOfferScreen from '../screens/NewOrEditOfferScreen';
 import OfferDetailScreen from '../screens/OfferDetailScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import EditProfileScreen from '../screens/EditProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -60,7 +61,7 @@ export default function UserStack() {
               <View style={{ paddingRight: 10 }}>
                 <Button
                   onPress={() => logout()}
-                  title="Logout"
+                  title="Salir"
                   buttonStyle={{ backgroundColor: '#111822' }}
                   titleStyle={{ color: '#FFA40B' }}
                 />
@@ -124,6 +125,13 @@ export default function UserStack() {
           component={ProfileScreen}
           options={{
             headerTitle: 'Perfil',
+          }}
+        />
+        <Stack.Screen
+          name="EditProfileScreen"
+          component={EditProfileScreen}
+          options={{
+            headerTitle: 'Editar Perfil',
           }}
         />
       </Stack.Navigator>
