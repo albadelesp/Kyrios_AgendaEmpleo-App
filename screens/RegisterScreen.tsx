@@ -4,6 +4,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
 import { StackScreenProps } from '@react-navigation/stack';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { db } from '../config/firebase';
+import { doc, setDoc } from "firebase/firestore";
 // @ts-ignore
 import kyrios from '../assets/kyrios.jpg';
 //const kyrios = require('../../assets/kyrios.jpg');
@@ -17,6 +19,20 @@ const RegisterScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
     password_confirmation: '',
     error: ''
   })
+
+  const createProfileDocument = async (userId: string) => {
+    try {
+      await setDoc(doc(db, 'users', userId), {
+        laboralExperience: '',
+        previousJobs: '',
+        education: '',
+      });
+      console.log('Documento de perfil creado para el usuario:', userId);
+    } catch (error) {
+      console.error('Error al crear el documento de perfil:', error);
+    }
+  };
+  
 
   async function signUp() {
     if (value.email === '' || value.password === '' || value.password === '') {
@@ -116,13 +132,20 @@ const RegisterScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
             title="CREAR CUENTA"
             buttonStyle={styles.buttonRegister} 
             titleStyle={{ color: '#111822' }}
-            onPress={signUp}
+            onPress={async () => {
+              await signUp();
+              const user = auth.currentUser;
+              if (user) {
+                createProfileDocument(user.uid);
+              }
+            }}
           />
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

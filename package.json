@@ -34,7 +34,7 @@
     "react-native-maps": "1.7.1",
     "react-native-paper": "^5.12.3",
     "react-native-web": "~0.19.6",
-    "expo-local-authentication": "~13.4.1",
+    "expo-local-authentication": "~13.4.1"
 
   },
   "devDependencies": {

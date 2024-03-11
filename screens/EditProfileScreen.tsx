@@ -1,70 +1,140 @@
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, StyleSheet, ScrollView, Text, View, Alert, TextInput } from 'react-native';
+import { Button } from 'react-native-elements';
+import { getAuth } from 'firebase/auth';
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
+import { StackScreenProps } from '@react-navigation/stack';
 
-import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+const auth = getAuth();
 
-interface OnSaveCallback {
-  (profileData: ProfileData): void;
-}
+const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
+  const [profileData, setProfileData] = useState({
+    laboralExperience: '',
+    previousJobs: '',
+    education: '',
+  });
 
-interface ProfileData {
-  laboralExperience: string;
-  previousJobs: string;
-  education: string;
-}
-
-const EditProfileScreen: React.FC<{ onSave: OnSaveCallback }> = ({ onSave }) => {
-  const [laboralExperience, setLaboralExperience] = useState('');
-  const [previousJobs, setPreviousJobs] = useState('');
-  const [education, setEducation] = useState('');
-
-  const saveProfile = () => {
-    const profileData = {
-      laboralExperience,
-      previousJobs,
-      education
-    };
-    onSave(profileData);
+  const saveProfileData = async () => {
+    const userUUID = auth.currentUser?.uid;
+    if (userUUID) {
+      const profileRef = doc(db, 'users', userUUID);
+      try {
+        await setDoc(profileRef, {
+          laboralExperience: profileData.laboralExperience,
+          previousJobs: profileData.previousJobs,
+          education: profileData.education,
+        });
+        Alert.alert('Perfil actualizado correctamente');
+        navigation.goBack();
+      } catch (error) {
+        console.error('Error al actualizar el perfil:', error);
+        Alert.alert('Error al actualizar el perfil. Por favor, inténtalo de nuevo más tarde.');
+      }
+    }
   };
 
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      const userUUID = auth.currentUser?.uid;
+      if (userUUID) {
+        const profileRef = doc(db, 'users', userUUID);
+        try {
+          const profileSnapshot = await getDoc(profileRef);
+          if (profileSnapshot.exists()) {
+            const data = profileSnapshot.data();
+            setProfileData({
+              laboralExperience: data.laboralExperience || '',
+              previousJobs: data.previousJobs || '',
+              education: data.education || '',
+            });
+          }
+        } catch (error) {
+          console.error('Error al obtener datos del perfil:', error);
+        }
+      }
+    };
+  
+    fetchProfileData();
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Vida Laboral"
-        value={laboralExperience}
-        onChangeText={text => setLaboralExperience(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Trabajos Anteriores"
-        value={previousJobs}
-        onChangeText={text => setPreviousJobs(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Educación"
-        value={education}
-        onChangeText={text => setEducation(text)}
-      />
-      <Button title="Guardar" onPress={saveProfile} />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>Edita tus datos</Text>
+          <Text style={styles.label}>Experiencia Laboral</Text>
+          <TextInput
+            value={profileData.laboralExperience}
+            onChangeText={(text) => setProfileData({ ...profileData, laboralExperience: text })}
+            placeholder="Experiencia laboral"
+            style={styles.textInput}
+            multiline
+          />
+          <Text style={styles.label}>Trabajos Anteriores</Text>
+          <TextInput
+            value={profileData.previousJobs}
+            onChangeText={(text) => setProfileData({ ...profileData, previousJobs: text })}
+            placeholder="Trabajos anteriores"
+            style={styles.textInput}
+            multiline
+          />
+          <Text style={styles.label}>Educación</Text>
+          <TextInput
+            value={profileData.education}
+            onChangeText={(text) => setProfileData({ ...profileData, education: text })}
+            placeholder="Educación"
+            style={styles.textInput}
+            multiline
+          />
+          <Button
+            title="Guardar Cambios"
+            onPress={saveProfileData}
+            buttonStyle={styles.saveButton}
+            titleStyle={styles.saveButtonText}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    backgroundColor: '#fff',
   },
-  input: {
-    width: '100%',
-    height: 40,
+  scrollView: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+  },
+  formContainer: {
+    marginTop: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  textInput: {
     borderWidth: 1,
     borderColor: '#ccc',
-    marginBottom: 10,
-    paddingHorizontal: 10,
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
+    minHeight: 120, 
+  },
+  saveButton: {
+    backgroundColor: '#FFA40B',
+    marginTop: 20,
+  },
+  saveButtonText: {
+    color: '#111822',
   },
 });
 

@@ -1,9 +1,10 @@
-import React, { useEffect }  from 'react';
+import React from 'react';
 import { SafeAreaView, StyleSheet, ScrollView, Text, View, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { firebase } from '@react-native-firebase/messaging';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../config/firebase'; // Asegúrate de importar la instancia de Firestore adecuada
 import kyrios from '../assets/kyrios.jpg';
 
 const auth = getAuth();
@@ -23,9 +24,20 @@ const LoginScreen = () => {
       })
       return;
     }
-
+  
     try {
-      await signInWithEmailAndPassword(auth, value.email, value.password);
+      const { user } = await signInWithEmailAndPassword(auth, value.email, value.password);
+      const profileDocRef = doc(db, 'users', user.uid); // Referencia al documento del usuario
+      const profileDocSnapshot = await getDoc(profileDocRef);
+      if (!profileDocSnapshot.exists()) {
+        // Si el documento no existe, lo creamos
+        await setDoc(profileDocRef, {
+          laboralExperience: '',
+          previousJobs: '',
+          education: '',
+        });
+        console.log('Documento de perfil creado para el usuario:', user.uid);
+      }
     } catch (error) {
       let msg = '';
       if (error instanceof Error) {
@@ -42,6 +54,7 @@ const LoginScreen = () => {
       })
     }
   }
+  
 
   return (
     <SafeAreaView style={styles.container}>
