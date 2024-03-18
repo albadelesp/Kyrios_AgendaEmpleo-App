@@ -5,6 +5,8 @@ import { auth, db } from '../config/firebase';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native'; 
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 
 interface ProfileData {
   laboralExperience: string;
@@ -55,6 +57,39 @@ const ProfileScreen: React.FC = () => {
     navigation.navigate('EditProfileScreen');
   };
 
+  const handleDownloadPDF = async () => {
+    try {
+      const htmlContent = `
+        <h1>Vida Laboral:</h1>
+        <p>${profileData.laboralExperience}</p>
+        <h1>Trabajos Anteriores:</h1>
+        <p>${profileData.previousJobs}</p>
+        <h1>Educación:</h1>
+        <p>${profileData.education}</p>
+      `;
+
+      const options = {
+        html: htmlContent,
+        width: 612, // Ancho de la página en pixels (US Letter paper format)
+        height: 792, // Alto de la página en pixels (US Letter paper format)
+      };
+
+      const { uri } = await Print.printToFileAsync(options);
+      console.log('URI del PDF generado:', uri);
+      handleSharePDF(uri);
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+    }
+  };
+  
+  const handleSharePDF = async (pdfUri: string) => {
+    try {
+      await Sharing.shareAsync(pdfUri);
+    } catch (error) {
+      console.error('Error al compartir PDF:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -87,6 +122,13 @@ const ProfileScreen: React.FC = () => {
         <Text style={styles.sectionTitle}>Educación</Text>
         <Text style={styles.sectionText}>{profileData.education}</Text>
       </View>
+
+      <Button
+        title="Descargar Información Personal"
+        buttonStyle={styles.buttonDownloadPDF}
+        titleStyle={{ color: '#111822' }}
+        onPress={handleDownloadPDF}
+      />
     </View>
   );
 };
@@ -130,6 +172,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginBottom: 20,
+  },
+  buttonDownloadPDF: {
+    backgroundColor: '#FFA40B',
+    width: '100%',
+    marginBottom: 20
   },
 });
 

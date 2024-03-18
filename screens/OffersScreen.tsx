@@ -8,6 +8,8 @@ import { getAuth } from 'firebase/auth';
 import { db } from '../config/firebase';
 import { useIsFocused } from "@react-navigation/native"; 
 import { useNavigation } from '@react-navigation/native'; 
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 
 const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
   const [refresher, setRefresher] = React.useState(false);
@@ -77,6 +79,57 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
       .catch(console.error);
 
   }, [focus, refresher]);
+
+  const handleDownloadPDF = async () => {
+    try {
+      if (!offers) {
+        console.error('No offers available');
+        return;
+      }
+  
+      let htmlContent = '';
+  
+      offers.forEach((offer) => {
+        const offerHTML = `
+        <div>
+        <h1><strong>Puesto:</strong> ${offer.position}</h1>
+        <p><strong>Empresa:</strong> ${offer.company}</p>
+        <p><strong>Horario:</strong> ${offer.schedule}</p>
+        <p><strong>Dirección de la empresa:</strong> ${offer.job_address}</p>
+        <p><strong>Requisitos educativos:</strong> ${offer.required_education}</p>
+        <p><strong>Requisitos laborales:</strong> ${offer.required_experience}</p>
+        <p><strong>Fecha de la entrevista:</strong> ${offer.interview_date}</p>
+        <p><strong>Persona de contacto:</strong> ${offer.contact_person}</p>
+        <p><strong>Dirección de la entrevista:</strong> ${offer.interview_address}</p>
+        </div>
+        <br />
+        `;
+  
+        htmlContent += offerHTML;
+      });
+  
+      const options = {
+        html: htmlContent,
+        width: 612,
+        height: 792,
+      };
+  
+      const { uri } = await Print.printToFileAsync(options);
+      console.log('URI del PDF generado:', uri);
+      handleSharePDF(uri);
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+    }
+  };
+  
+
+  const handleSharePDF = async (pdfUri: string) => {
+    try {
+      await Sharing.shareAsync(pdfUri);
+    } catch (error) {
+      console.error('Error al compartir PDF:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -154,7 +207,6 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
           )
         }}
       />
-      {/* Botón para ir a la pantalla de chat */}
       <Button 
         title="Ir al Chat"
         buttonStyle={styles.buttonGoToChat}
@@ -162,6 +214,12 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
         onPress={() => {
           navigation.navigate('Chat')
         }}
+      />
+      <Button
+        title="Descargar Ofertas"
+        buttonStyle={styles.buttonGoToChat}
+        titleStyle={{ color: '#111822' }}
+        onPress={handleDownloadPDF}
       />
     </View>
   );
