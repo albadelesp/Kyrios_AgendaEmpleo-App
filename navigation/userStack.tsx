@@ -46,7 +46,7 @@ export default function UserStack() {
           name="Offers"
           component={OffersScreen}
           options={({ navigation }) => ({
-            headerTitle: 'Registro de Ofertas',
+            headerTitle: 'Ofertas',
             headerLeft: () => (
               <View style={{ paddingLeft: 10 }}>
                 <Button
@@ -78,7 +78,7 @@ export default function UserStack() {
               <View style={{ paddingRight: 10 }}>
                 <Button
                   onPress={() => logout()}
-                  title="Logout"
+                  title="Salir"
                   buttonStyle={{ backgroundColor: '#111822' }}
                   titleStyle={{ color: '#FFA40B' }}
                 />
@@ -95,7 +95,7 @@ export default function UserStack() {
               <View style={{ paddingRight: 10 }}>
                 <Button
                   onPress={() => logout()}
-                  title="Logout"
+                  title="Salir"
                   buttonStyle={{ backgroundColor: '#111822' }}
                   titleStyle={{ color: '#FFA40B' }}
                 />
@@ -112,7 +112,7 @@ export default function UserStack() {
               <View style={{ paddingRight: 10 }}>
                 <Button
                   onPress={() => logout()}
-                  title="Logout"
+                  title="Salir"
                   buttonStyle={{ backgroundColor: '#111822' }}
                   titleStyle={{ color: '#FFA40B' }}
                 />
@@ -124,14 +124,34 @@ export default function UserStack() {
           name="ProfileScreen"
           component={ProfileScreen}
           options={{
-            headerTitle: 'Perfil',
+            headerTitle: 'Chat',
+            headerRight: () => (
+              <View style={{ paddingRight: 10 }}>
+                <Button
+                  onPress={() => logout()}
+                  title="Salir"
+                  buttonStyle={{ backgroundColor: '#111822' }}
+                  titleStyle={{ color: '#FFA40B' }}
+                />
+              </View>
+            )
           }}
         />
         <Stack.Screen
           name="EditProfileScreen"
           component={EditProfileScreen}
           options={{
-            headerTitle: 'Editar Perfil',
+            headerTitle: 'Chat',
+            headerRight: () => (
+              <View style={{ paddingRight: 10 }}>
+                <Button
+                  onPress={() => logout()}
+                  title="Salir"
+                  buttonStyle={{ backgroundColor: '#111822' }}
+                  titleStyle={{ color: '#FFA40B' }}
+                />
+              </View>
+            )
           }}
         />
       </Stack.Navigator>
