@@ -11,6 +11,7 @@ import OfferDetailScreen from '../screens/OfferDetailScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
+import DocumentScreen from '../screens/DocumentScreen';
 
 const Stack = createStackNavigator();
 
@@ -142,6 +143,23 @@ export default function UserStack() {
           component={EditProfileScreen}
           options={{
             headerTitle: 'Chat',
+            headerRight: () => (
+              <View style={{ paddingRight: 10 }}>
+                <Button
+                  onPress={() => logout()}
+                  title="Salir"
+                  buttonStyle={{ backgroundColor: '#111822' }}
+                  titleStyle={{ color: '#FFA40B' }}
+                />
+              </View>
+            )
+          }}
+        />
+        <Stack.Screen
+          name="DocumentScreen"
+          component={DocumentScreen}
+          options={{
+            headerTitle: 'Documentos',
             headerRight: () => (
               <View style={{ paddingRight: 10 }}>
                 <Button

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { collection, doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../config/firebase'; 
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
-import { useNavigation } from '@react-navigation/native'; 
+import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { collection, doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../config/firebase';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 
@@ -90,39 +90,58 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
+  const handleNavigateToDocumentScreen = () => {
+    navigation.navigate('DocumentScreen');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Tu información</Text>
-        <Button
-          raised
-          buttonStyle={styles.buttonEditProfile}
-          titleStyle={{ color: '#FFA40B' }}
-          containerStyle={{ width: 50 }} 
-          icon={{
-            name: "edit",
-            size: 25,
-            color: "white"
-          }}
-          onPress={handleEditProfile}
-        />
+        <View style={styles.buttonContainer}>
+          <Button
+            raised
+            buttonStyle={styles.buttonEditProfile}
+            titleStyle={{ color: '#FFA40B' }}
+            containerStyle={{ width: 50 }} 
+            icon={{
+              name: "edit",
+              size: 25,
+              color: "white"
+            }}
+            onPress={handleEditProfile}
+          />
+          <Button
+            raised
+            buttonStyle={styles.documentButton}
+            titleStyle={{ color: '#FFA40B' }}
+            containerStyle={{ width: 50, marginLeft: 10 }} 
+            icon={{
+              name: "file",
+              type: "font-awesome",
+              size: 25,
+              color: "white"
+            }}
+            onPress={handleNavigateToDocumentScreen}
+          />
+        </View>
       </View>
-
+  
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Vida Laboral</Text>
         <Text style={styles.sectionText}>{profileData.laboralExperience}</Text>
       </View>
-
+  
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Trabajos Anteriores</Text>
         <Text style={styles.sectionText}>{profileData.previousJobs}</Text>
       </View>
-
+  
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Educación</Text>
         <Text style={styles.sectionText}>{profileData.education}</Text>
       </View>
-
+  
       <Button
         title="Descargar Información Personal"
         buttonStyle={styles.buttonDownloadPDF}
@@ -131,53 +150,66 @@ const ProfileScreen: React.FC = () => {
       />
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  sectionText: {
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  buttonEditProfile: {
-    backgroundColor: '#111822',
-    borderRadius: 5,
-    width: 50,
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sectionContainer: {
-    backgroundColor: '#F0F0F0',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-  buttonDownloadPDF: {
-    backgroundColor: '#FFA40B',
-    width: '100%',
-    marginBottom: 20
-  },
-});
+  };
+  
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      paddingHorizontal: 20,
+      paddingTop: 20,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 20,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+    },
+    sectionTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 10,
+    },
+    sectionText: {
+      fontSize: 16,
+      marginBottom: 20,
+    },
+    buttonEditProfile: {
+      backgroundColor: '#111822',
+      borderRadius: 5,
+      width: 50,
+      height: 50,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    sectionContainer: {
+      backgroundColor: '#F0F0F0',
+      padding: 10,
+      borderRadius: 5,
+      marginBottom: 20,
+    },
+    buttonDownloadPDF: {
+      backgroundColor: '#FFA40B',
+      width: '100%',
+      marginBottom: 20
+    },
+    documentButton: {
+      backgroundColor: '#111822',
+      borderRadius: 5,
+      width: 50,
+      height: 50,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+  });
+  
 
 export default ProfileScreen;
