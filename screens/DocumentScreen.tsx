@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, TextInput } from 'react-native';
-import { auth, db, storage, firestore } from '../config/firebase'; 
+import { auth, db, storage } from '../config/firebase'; 
 import { collection, DocumentData, getDocs, deleteDoc, doc, setDoc, addDoc } from 'firebase/firestore';
 import * as FileSystem from 'expo-file-system';
 import { Button } from 'react-native-elements';
@@ -132,7 +132,7 @@ const DocumentScreen: React.FC = () => {
       const downloadUrl = await response.ref.getDownloadURL();
 
       // Guardar metadatos en Firestore
-      await firestore.collection('documents').add({
+      await db.collection('documents').add({
         name: documentName,
         url: downloadUrl,
         // Puedes agregar más metadatos según sea necesario
