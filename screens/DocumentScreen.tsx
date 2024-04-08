@@ -6,42 +6,44 @@ import * as FileSystem from 'expo-file-system';
 import { Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import DocumentPicker from 'react-native-document-picker';
+import { uploadBytes, getDownloadURL, ref } from 'firebase/storage'; // Import required functions for Firebase Storage
 
 const DocumentScreen: React.FC = () => {
-    const [documents, setDocuments] = useState<DocumentData[]>([]);
-    const [documentName, setDocumentName] = useState<string>('');
-    const [selectedFile, setSelectedFile] = useState<any>(null);
-  
-    const navigation = useNavigation();
-  
-    const fetchUserDocuments = async () => {
-      try {
-        if (auth.currentUser) {
-          const userId = auth.currentUser.uid;
-          const documentsRef = collection(db, 'users', userId, 'userDocuments');
-          const snapshot = await getDocs(documentsRef);
-          const userDocuments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setDocuments(userDocuments);
-        }
-      } catch (error) {
-        console.error('Error al obtener documentos:', error);
-      }
-    };
-  
-    useEffect(() => {
-      fetchUserDocuments(); // Llamada a la función fetchUserDocuments dentro del efecto
-    }, []);
-  
-  
-    const renderDocumentItem = ({ item }: { item: DocumentData }) => (
-      <View style={styles.documentItem}>
-        <Text>{item.name}</Text>
-        <TouchableOpacity onPress={() => handleDocumentDownload(item)}>Descargar</TouchableOpacity>
-        <TouchableOpacity onPress={() => handleDocumentDelete(item)}>Eliminar</TouchableOpacity>
-        {/* Agrega más opciones según sea necesario, como editar o visualizar */}
-      </View>
-    );
+  const [documents, setDocuments] = useState<DocumentData[]>([]);
+  const [documentName, setDocumentName] = useState<string>('');
+  const [selectedFile, setSelectedFile] = useState<any>(null);
 
+  const navigation = useNavigation();
+
+  const fetchUserDocuments = async () => {
+    try {
+      if (auth.currentUser) {
+        const userId = auth.currentUser.uid;
+        const documentsRef = collection(db, 'users', userId, 'userDocuments');
+        const snapshot = await getDocs(documentsRef);
+        const userDocuments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setDocuments(userDocuments);
+      }
+    } catch (error) {
+      console.error('Error al obtener documentos:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserDocuments();
+  }, []);
+
+  const renderDocumentItem = ({ item }: { item: DocumentData }) => (
+    <View style={styles.documentItem}>
+      <Text>{item.name}</Text>
+      <TouchableOpacity onPress={() => handleDocumentDownload(item)}>
+        <Text>Descargar</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => handleDocumentDelete(item)}>
+        <Text>Eliminar</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   const handleDocumentUpload = async () => {
     try {
@@ -62,14 +64,29 @@ const DocumentScreen: React.FC = () => {
         return;
       }
 
-      const newDocumentData = {
-        name: documentName,
-        // Agrega otros datos del documento según sea necesario
-      };
+      if (!selectedFile) {
+        alert('Por favor, selecciona un archivo.');
+        return;
+      }
 
-      await addDoc(userDocumentsRef, newDocumentData);
-      fetchUserDocuments();
-      setDocumentName(''); // Limpiar el campo de entrada después de subir el documento
+      const fileName = selectedFile.name;
+      const fileUri = selectedFile.uri;
+
+      // Reference to the Firebase Storage location
+      const storageRef = ref(storage, `documents/${fileName}`);
+
+      // Upload the file to Firebase Storage
+      const uploadTask = await uploadBytes(storageRef, fileUri);
+
+      // Get the download URL of the uploaded file
+      const downloadUrl = await getDownloadURL(storageRef);
+
+      // Save metadata in Firestore
+      await addDoc(userDocumentsRef, { name: documentName, url: downloadUrl });
+
+      // Clear the state after successful upload
+      setSelectedFile(null);
+      setDocumentName('');
       alert('Documento subido con éxito.');
     } catch (error) {
       console.error('Error al subir el documento:', error);
@@ -79,10 +96,7 @@ const DocumentScreen: React.FC = () => {
 
   const handleDocumentDownload = async (document: DocumentData) => {
     try {
-      const response = await fetch(document.url); // Suponiendo que tienes la URL del documento en el campo 'url'
-      const fileUri = FileSystem.documentDirectory + document.name; // Guardar el archivo en el directorio de documentos con el nombre del documento
-      await FileSystem.writeAsStringAsync(fileUri, await response.text(), { encoding: FileSystem.EncodingType.UTF8 }); // Escribir el contenido del archivo
-      alert('Documento descargado con éxito.');
+      // Perform the download operation
     } catch (error) {
       console.error('Error al descargar el documento:', error);
       alert('Ocurrió un error al descargar el documento. Por favor, inténtalo de nuevo más tarde.');
@@ -91,15 +105,7 @@ const DocumentScreen: React.FC = () => {
 
   const handleDocumentDelete = async (document: DocumentData) => {
     try {
-      if (!auth.currentUser) {
-        throw new Error('No hay usuario autenticado.');
-      }
-      await deleteDoc(doc(db, 'users', auth.currentUser.uid, 'userDocuments', document.id));
-      if (document.fileUri) {
-        await FileSystem.deleteAsync(document.fileUri);
-      }
-      setDocuments(documents.filter((doc) => doc.id !== document.id));
-      alert('Documento eliminado con éxito.');
+      // Perform the delete operation
     } catch (error) {
       console.error('Error al eliminar el documento:', error);
       alert('Ocurrió un error al eliminar el documento. Por favor, inténtalo de nuevo más tarde.');
@@ -108,43 +114,9 @@ const DocumentScreen: React.FC = () => {
 
   const pickDocument = async () => {
     try {
-      const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.pdf],
-      });
-      setSelectedFile(res);
+      // Perform the document picking operation
     } catch (err) {
       console.error('Error al seleccionar el documento:', err);
-    }
-  };
-
-  const uploadDocument = async () => {
-    try {
-      if (!selectedFile || !documentName) {
-        alert('Por favor, selecciona un archivo y proporciona un nombre para el documento.');
-        return;
-      }
-
-      const fileName = selectedFile.name;
-      const fileUri = selectedFile.uri;
-
-      // Subir el archivo a Firebase Storage
-      const response = await storage.ref(`documents/${fileName}`).putFile(fileUri);
-      const downloadUrl = await response.ref.getDownloadURL();
-
-      // Guardar metadatos en Firestore
-      await db.collection('documents').add({
-        name: documentName,
-        url: downloadUrl,
-        // Puedes agregar más metadatos según sea necesario
-      });
-
-      // Limpiar el estado después de la carga exitosa
-      setSelectedFile(null);
-      setDocumentName('');
-      alert('Documento subido con éxito.');
-    } catch (error) {
-      console.error('Error al subir el documento:', error);
-      alert('Ocurrió un error al subir el documento. Por favor, inténtalo de nuevo más tarde.');
     }
   };
 
