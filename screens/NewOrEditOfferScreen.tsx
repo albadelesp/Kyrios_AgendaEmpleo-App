@@ -118,7 +118,9 @@ const [value, setValue] = React.useState({
     contact_person: '',
     interview_address: '',
     interview_latitude: undefined,
-    interview_longitude: undefined
+    interview_longitude: undefined,
+    interview_state: '',
+    interview_color: ''
 });
   
 
@@ -191,6 +193,8 @@ useEffect(() => {
       interview_address: offer.interview_address || '',
       interview_latitude: offer.interview_latitude,
       interview_longitude: offer.interview_longitude,
+      interview_state: offer.interview_state || '',
+      interview_color: offer.interview_color || ''
     });
   }
 }, [isEditMode, offer]);
@@ -219,6 +223,8 @@ useEffect(() => {
       interview_address: value.interview_address,
       interview_latitude: value.interview_latitude,
       interview_longitude: value.interview_longitude,
+      interview_state: value.interview_state,
+      interview_color: value.interview_color
     }
     
     let obj = JSON.parse(JSON.stringify(offer_obj));
@@ -582,6 +588,35 @@ useEffect(() => {
             />
           </ScrollView>
 
+          <Text>
+            Estado de la entrevista:
+          </Text>
+          <Text style = {{color: value.interview_color}}>{value.interview_state}</Text>
+          <View style={styles.buttonscontainer}>
+          <Button
+          onPress={() => {setValue({...value, interview_state: "Programada", interview_color:"#48B93D"})}}
+          title = {"Programada"}
+          buttonStyle={styles.buttonProgramState}
+          />
+          <Button
+          onPress={() => {setValue({...value, interview_state: "En Proceso", interview_color:'#3D6AB9'})}}
+          title = {"En proceso"}
+          buttonStyle={styles.buttonProcessState}
+          />
+          </View>
+          <View style={styles.buttonscontainer}>
+          <Button
+          onPress={() => {setValue({...value, interview_state: "Finalizada", interview_color:'#EED238'})}}
+          title = {"Finalizada"}
+          buttonStyle={styles.buttonFinState}
+          />
+         <Button
+          onPress={() => {setValue({...value, interview_state: "Cancelada", interview_color:'#FF2E00'})}}
+          title = {"Cancelada"}
+          buttonStyle={styles.buttonCancState}
+          />
+          </View>  
+
           <View style={styles.buttons}>
             <Button
               onPress={() => {
@@ -664,7 +699,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     padding: 10,
     color: '#fff',
-    backgroundColor: '#D54826FF',
+    backgroundColor: '#d54826ff',
   },
 
   buttons: {
@@ -673,9 +708,31 @@ const styles = StyleSheet.create({
   },
 
   buttonSave: {
-    backgroundColor: '#FFA40B',
+    backgroundColor: '#ffa40b',
     width: '100%',
     marginTop: 50
+  },
+  buttonscontainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginBottom: 20,
+  },
+  buttonProgramState:
+  {
+    marginTop: 20,
+    backgroundColor: '#008d09'
+  },
+
+  buttonProcessState:{
+    marginTop: 20,
+    backgroundColor: '#019fb8'
+  },
+  buttonFinState:{
+    backgroundColor: '#d6d41d'
+  },
+  buttonCancState:{
+    backgroundColor: '#e91711'
   },
 
 });
