@@ -69,10 +69,11 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#FF231F7C',
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC
       });
     }
   
-    if (Constants.isDevice) {
+    if (Platform.OS !== 'web') {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
       if (existingStatus !== 'granted') {
@@ -80,15 +81,15 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
         finalStatus = status;
       }
       if (finalStatus !== 'granted') {
-        alert('Failed to get push token for push notification!');
+        alert('Fallo al conseguir el token');
         return;
       }
       // Learn more about projectId:
       // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
-      token = (await Notifications.getExpoPushTokenAsync({ projectId: 'your-project-id' })).data;
+      token = (await Notifications.getExpoPushTokenAsync()).data;
       console.log(token);
     } else {
-      alert('Must use physical device for Push Notifications');
+      alert('Debe ser un dispositivo fisico para obtener el token');
     }
   
     return token;
@@ -126,7 +127,7 @@ const [value, setValue] = React.useState({
 
 const offer : Offer = route?.params?.offer;
 const isEditMode = offer != undefined;
-const screenTitle = isEditMode ? 'Edición oferta' : 'Nueva oferta';
+const screenTitle = isEditMode ? 'Editar oferta' : 'Nueva oferta';
   
 const jobRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
 const interviewRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
@@ -241,9 +242,7 @@ useEffect(() => {
     const collection_name = `users/${user_uuid}/offers`;
     try {
       await addDoc(collection(db, collection_name), buildOfferObjectFromState());
-    
       //Notificación
-      
       await sendPushNotification(expoPushToken);
 
       navigation.navigate('Offers');
@@ -594,24 +593,24 @@ useEffect(() => {
           <Text style = {{color: value.interview_color}}>{value.interview_state}</Text>
           <View style={styles.buttonscontainer}>
           <Button
-          onPress={() => {setValue({...value, interview_state: "Programada", interview_color:"#48B93D"})}}
+          onPress={() => {setValue({...value, interview_state: "Programada", interview_color:'#48b93d'})}}
           title = {"Programada"}
           buttonStyle={styles.buttonProgramState}
           />
           <Button
-          onPress={() => {setValue({...value, interview_state: "En Proceso", interview_color:'#3D6AB9'})}}
+          onPress={() => {setValue({...value, interview_state: "En Proceso", interview_color:'#3d6ab9'})}}
           title = {"En proceso"}
           buttonStyle={styles.buttonProcessState}
           />
           </View>
           <View style={styles.buttonscontainer}>
           <Button
-          onPress={() => {setValue({...value, interview_state: "Finalizada", interview_color:'#EED238'})}}
+          onPress={() => {setValue({...value, interview_state: "Finalizada", interview_color:'#eed238'})}}
           title = {"Finalizada"}
           buttonStyle={styles.buttonFinState}
           />
          <Button
-          onPress={() => {setValue({...value, interview_state: "Cancelada", interview_color:'#FF2E00'})}}
+          onPress={() => {setValue({...value, interview_state: "Cancelada", interview_color:'#ff2e00'})}}
           title = {"Cancelada"}
           buttonStyle={styles.buttonCancState}
           />
