@@ -51,22 +51,22 @@ function TabNavigator(){
         name = 'Perfil' component={ProfileScreen}
         options={{tabBarIcon: ({size, color})=> (
           <Ionicons name = "person"
-          size = {size} color = {color}/>
-        )}}
+          size = {size} color = '#FFA40B'/>
+        ),tabBarLabelStyle: { color: '#111822' }}}
       />
       <Tab.Screen
         name = 'Ofertas' component = {UserStack}
         options={{tabBarIcon: ({size, color})=> (
           <Ionicons name = "home"
-          size = {size} color = {color}/>
-        )}}
+          size = {size} color = '#FFA40B'/>
+        ),tabBarLabelStyle: { color: '#111822' }}}
       />
       <Tab.Screen
         name = 'Chat' component={ChatScreen}
         options={{tabBarIcon: ({size, color})=> (
           <Ionicons name = "chatbubbles"
-          size = {size} color = {color}/>
-        )}}
+          size = {size} color = '#FFA40B'/>
+        ),tabBarLabelStyle: { color: '#111822' }}}
       />
     </Tab.Navigator>
   )
