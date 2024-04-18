@@ -215,14 +215,6 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
           )
         }}
       />
-      <Button 
-        title="Ir al Chat"
-        buttonStyle={styles.buttonGoToChat}
-        titleStyle={{ color: '#111822' }}
-        onPress={() => {
-          navigation.navigate('Chat')
-        }}
-      />
       <Button
         title="Descargar Ofertas"
         buttonStyle={styles.buttonGoToChat}

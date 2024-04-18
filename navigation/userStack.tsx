@@ -1,9 +1,13 @@
 import React from 'react';
 import { Alert, View } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Button, TabView } from 'react-native-elements';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { getAuth, signOut } from 'firebase/auth';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
+
 
 import OffersScreen from '../screens/OffersScreen';
 import NewOrEditOfferScreen from '../screens/NewOrEditOfferScreen';
@@ -12,7 +16,9 @@ import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 
+
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 async function logout() {
   Alert.alert(
@@ -37,26 +43,44 @@ async function logout() {
   );
 }
 
-export default function UserStack() {
+function TabNavigator(){
+  return(
+    <Tab.Navigator
+    screenOptions={{headerShown: false}}>
+      <Tab.Screen
+        name = 'Perfil' component={ProfileScreen}
+        options={{tabBarIcon: ({size, color})=> (
+          <Ionicons name = "person"
+          size = {size} color = {color}/>
+        )}}
+      />
+      <Tab.Screen
+        name = 'Ofertas' component = {UserStack}
+        options={{tabBarIcon: ({size, color})=> (
+          <Ionicons name = "home"
+          size = {size} color = {color}/>
+        )}}
+      />
+      <Tab.Screen
+        name = 'Chat' component={ChatScreen}
+        options={{tabBarIcon: ({size, color})=> (
+          <Ionicons name = "chatbubbles"
+          size = {size} color = {color}/>
+        )}}
+      />
+    </Tab.Navigator>
+  )
+}
+
+function UserStack() {
 
   return (
-    <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
           name="Offers"
           component={OffersScreen}
-          options={({ navigation }) => ({
+          options={() => ({
             headerTitle: 'Registro de Ofertas',
-            headerLeft: () => (
-              <View style={{ paddingLeft: 10 }}>
-                <Button
-                  onPress={() => navigation.navigate('ProfileScreen')}
-                  title="Perfil"
-                  type="clear"
-                  titleStyle={{ color: '#FFA40B' }}
-                />
-              </View>
-            ),
             headerRight: () => (
               <View style={{ paddingRight: 10 }}>
                 <Button
@@ -135,6 +159,13 @@ export default function UserStack() {
           }}
         />
       </Stack.Navigator>
+  );
+}
+
+export default function User(){
+  return(
+    <NavigationContainer>
+      <TabNavigator/>  
     </NavigationContainer>
   );
 }

@@ -8,8 +8,6 @@ import { db } from "../config/firebase";
 import { StackScreenProps } from '@react-navigation/stack';
 import { Offer } from '../models/Offer';
 import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
-import { Subscription } from 'expo-notifications';
 import { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
 
 const auth = getAuth();
@@ -147,7 +145,7 @@ useEffect(() => {
         console.error('El token de Expo Push es undefined');
       }
     } catch (error) {
-      console.error('Error al registrar para notificaciones:', error);
+      console.error('Error al registrar notificaciones:', error);
     }
   };
 
