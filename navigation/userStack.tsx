@@ -125,7 +125,7 @@ export default function UserStack() {
           name="ProfileScreen"
           component={ProfileScreen}
           options={{
-            headerTitle: 'Chat',
+            headerTitle: 'Perfil',
             headerRight: () => (
               <View style={{ paddingRight: 10 }}>
                 <Button
@@ -142,7 +142,7 @@ export default function UserStack() {
           name="EditProfileScreen"
           component={EditProfileScreen}
           options={{
-            headerTitle: 'Chat',
+            headerTitle: 'Editar perfil',
             headerRight: () => (
               <View style={{ paddingRight: 10 }}>
                 <Button

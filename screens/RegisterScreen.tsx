@@ -8,7 +8,6 @@ import { db } from '../config/firebase';
 import { doc, setDoc } from "firebase/firestore";
 // @ts-ignore
 import kyrios from '../assets/kyrios.jpg';
-//const kyrios = require('../../assets/kyrios.jpg');
 
 const auth = getAuth();
 
@@ -17,12 +16,14 @@ const RegisterScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
     email: '',
     password: '',
     password_confirmation: '',
+    displayName: '', // Agregar el campo displayName en el estado
     error: ''
   })
 
   const createProfileDocument = async (userId: string) => {
     try {
       await setDoc(doc(db, 'users', userId), {
+        displayName: value.displayName,
         laboralExperience: '',
         previousJobs: '',
         education: '',
@@ -32,6 +33,7 @@ const RegisterScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
       console.error('Error al crear el documento de perfil:', error);
     }
   };
+  
   
 
   async function signUp() {
@@ -90,6 +92,18 @@ const RegisterScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
         {!!value.error && <View style={styles.error}><Text>{value.error}</Text></View>}
 
         <View style={styles.controls}>
+        <Input
+            autoComplete='off'
+            placeholder='Nombre y apellidos'
+            containerStyle={styles.control}
+            value={value.displayName}
+            onChangeText={(text) => setValue({ ...value, displayName: text })}
+            leftIcon={<Icon
+              name='user'
+              size={16}
+            />}
+          />
+
           <Input
             autoComplete='off'
             placeholder='Introduce tu email...'

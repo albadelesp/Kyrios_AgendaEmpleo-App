@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
 import { Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { collection, doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 
 interface ProfileData {
+  name: string;
   laboralExperience: string;
   previousJobs: string;
   education: string;
@@ -16,6 +16,7 @@ interface ProfileData {
 
 const ProfileScreen: React.FC = () => {
   const [profileData, setProfileData] = useState<ProfileData>({
+    name: '',
     laboralExperience: '',
     previousJobs: '',
     education: '',
@@ -35,9 +36,10 @@ const ProfileScreen: React.FC = () => {
           if (profileDocSnapshot.exists()) {
             const data = profileDocSnapshot.data();
             setProfileData({
-              laboralExperience: data.laboralExperience || '',
-              previousJobs: data.previousJobs || '',
-              education: data.education || '',
+              name: data?.name || '',
+              laboralExperience: data?.laboralExperience || '',
+              previousJobs: data?.previousJobs || '',
+              education: data?.education || '',
             });
           } else {
             console.log('El documento del perfil no existe');
@@ -57,9 +59,15 @@ const ProfileScreen: React.FC = () => {
     navigation.navigate('EditProfileScreen');
   };
 
+  const handleNavigateToDocumentScreen = () => {
+    navigation.navigate('DocumentScreen');
+  };
+
   const handleDownloadPDF = async () => {
     try {
       const htmlContent = `
+        <h1>Nombre:</h1>
+        <p>${profileData.name}</p>
         <h1>Vida Laboral:</h1>
         <p>${profileData.laboralExperience}</p>
         <h1>Trabajos Anteriores:</h1>
@@ -90,8 +98,24 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
-  const handleNavigateToDocumentScreen = () => {
-    navigation.navigate('DocumentScreen');
+  const handleSaveProfile = async () => {
+    try {
+      if (auth.currentUser) {
+        const userId = auth.currentUser.uid;
+        const profileDocRef = doc(db, 'users', userId);
+        await updateDoc(profileDocRef, {
+          name: profileData.name,
+          laboralExperience: profileData.laboralExperience,
+          previousJobs: profileData.previousJobs,
+          education: profileData.education,
+        });
+        console.log('Perfil actualizado correctamente');
+      } else {
+        console.log('El usuario no está autenticado');
+      }
+    } catch (error) {
+      console.error('Error al guardar perfil:', error);
+    }
   };
 
   return (
@@ -126,7 +150,7 @@ const ProfileScreen: React.FC = () => {
           />
         </View>
       </View>
-  
+      
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Vida Laboral</Text>
         <Text style={styles.sectionText}>{profileData.laboralExperience}</Text>
@@ -150,66 +174,72 @@ const ProfileScreen: React.FC = () => {
       />
     </View>
   );
-  };
-  
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      paddingHorizontal: 20,
-      paddingTop: 20,
-    },
-    header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 20,
-    },
-    headerTitle: {
-      fontSize: 24,
-      fontWeight: 'bold',
-    },
-    sectionTitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      marginBottom: 10,
-    },
-    sectionText: {
-      fontSize: 16,
-      marginBottom: 20,
-    },
-    buttonEditProfile: {
-      backgroundColor: '#111822',
-      borderRadius: 5,
-      width: 50,
-      height: 50,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    sectionContainer: {
-      backgroundColor: '#F0F0F0',
-      padding: 10,
-      borderRadius: 5,
-      marginBottom: 20,
-    },
-    buttonDownloadPDF: {
-      backgroundColor: '#FFA40B',
-      width: '100%',
-      marginBottom: 20
-    },
-    documentButton: {
-      backgroundColor: '#111822',
-      borderRadius: 5,
-      width: 50,
-      height: 50,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    buttonContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-  });
-  
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  sectionText: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  buttonEditProfile: {
+    backgroundColor: '#111822',
+    borderRadius: 5,
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sectionContainer: {
+    backgroundColor: '#F0F0F0',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  buttonDownloadPDF: {
+    backgroundColor: '#FFA40B',
+    width: '100%',
+    marginBottom: 20
+  },
+  documentButton: {
+    backgroundColor: '#111822',
+    borderRadius: 5,
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
+});
 
 export default ProfileScreen;
