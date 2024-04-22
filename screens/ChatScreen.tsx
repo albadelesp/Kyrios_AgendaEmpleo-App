@@ -28,28 +28,40 @@ export default function Chat() {
           _id: doc.id,
           text: data.text,
           createdAt: new Date(data.createdAt.seconds * 1000), // Convertir la fecha de Firestore a Date
-          user: data.user
+          user: {
+            _id: data.user._id, // ID del usuario
+            name: data.user.name // Nombre del usuario
+          }
         };
         messagesData.push(message);
       });
       setMessages(messagesData);
     });
-
+  
     return () => unsubscribe(); // Detener la escucha de cambios cuando se desmonta el componente
   }, []);
+  
 
   const onSend = useCallback((messages: IMessage[] = []) => {
     const newMessage = messages[0];
-    addDoc(collection(db, 'messages'), {
-      text: newMessage.text,
-      createdAt: new Date(),
-      user: newMessage.user
-    }).then(() => {
-      console.log('Message sent successfully');
-    }).catch(error => {
-      console.error('Error sending message:', error);
-    });
-  }, []);
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      addDoc(collection(db, 'messages'), {
+        text: newMessage.text,
+        createdAt: new Date(),
+        user: {
+          _id: currentUser.uid,
+          name: currentUser.displayName, // Nombre del usuario
+        },
+      })
+        .then(() => {
+          console.log('Message sent successfully');
+        })
+        .catch((error) => {
+          console.error('Error sending message:', error);
+        });
+    }
+  }, []);  
 
   const renderBubble = (props: any) => {
     return (

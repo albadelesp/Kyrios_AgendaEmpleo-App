@@ -10,17 +10,24 @@ const auth = getAuth();
 
 const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
   const [profileData, setProfileData] = useState({
+    name: '',
     laboralExperience: '',
     previousJobs: '',
     education: '',
   });
 
   const saveProfileData = async () => {
+    if (!profileData.name) {
+      Alert.alert('Error', 'Por favor, introduce tu nombre y apellidos.');
+      return;
+    }
+
     const userUUID = auth.currentUser?.uid;
     if (userUUID) {
       const profileRef = doc(db, 'users', userUUID);
       try {
         await setDoc(profileRef, {
+          name: profileData.name,
           laboralExperience: profileData.laboralExperience,
           previousJobs: profileData.previousJobs,
           education: profileData.education,
@@ -44,6 +51,7 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
           if (profileSnapshot.exists()) {
             const data = profileSnapshot.data();
             setProfileData({
+              name: data.name || '',
               laboralExperience: data.laboralExperience || '',
               previousJobs: data.previousJobs || '',
               education: data.education || '',
@@ -63,28 +71,31 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.formContainer}>
           <Text style={styles.title}>Edita tus datos</Text>
+          <Text style={[styles.label, styles.nameLabel]}>Nombre y apellidos *</Text>
+          <TextInput
+            value={profileData.name}
+            onChangeText={(text) => setProfileData({ ...profileData, name: text })}
+            style={[styles.textInput, styles.smallTextInput]}
+          />
           <Text style={styles.label}>Experiencia Laboral</Text>
           <TextInput
             value={profileData.laboralExperience}
             onChangeText={(text) => setProfileData({ ...profileData, laboralExperience: text })}
-            placeholder="Experiencia laboral"
-            style={styles.textInput}
+            style={[styles.textInput, styles.largeTextInput]}
             multiline
           />
           <Text style={styles.label}>Trabajos Anteriores</Text>
           <TextInput
             value={profileData.previousJobs}
             onChangeText={(text) => setProfileData({ ...profileData, previousJobs: text })}
-            placeholder="Trabajos anteriores"
-            style={styles.textInput}
+            style={[styles.textInput, styles.largeTextInput]}
             multiline
           />
           <Text style={styles.label}>Educación</Text>
           <TextInput
             value={profileData.education}
             onChangeText={(text) => setProfileData({ ...profileData, education: text })}
-            placeholder="Educación"
-            style={styles.textInput}
+            style={[styles.textInput, styles.largeTextInput]}
             multiline
           />
           <Button
@@ -121,13 +132,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
+  nameLabel: {
+    marginBottom: 5,
+  },
   textInput: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     padding: 10,
     marginBottom: 20,
-    minHeight: 120, 
+  },
+  smallTextInput: {
+    height: 40,
+  },
+  largeTextInput: {
+    minHeight: 120,
   },
   saveButton: {
     backgroundColor: '#FFA40B',

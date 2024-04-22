@@ -16,8 +16,8 @@ import OfferDetailScreen from '../screens/OfferDetailScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
+import DocumentScreen from '../screens/DocumentScreen';
 import QuestionsScreen from '../screens/QuestionsScreen';
-
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -133,7 +133,7 @@ function UserStack() {
               <View style={{ paddingRight: 10 }}>
                 <Button
                   onPress={() => logout()}
-                  title="Logout"
+                  title="Salir"
                   buttonStyle={{ backgroundColor: '#111822' }}
                   titleStyle={{ color: '#FFA40B' }}
                 />
@@ -150,7 +150,7 @@ function UserStack() {
               <View style={{ paddingRight: 10 }}>
                 <Button
                   onPress={() => logout()}
-                  title="Logout"
+                  title="Salir"
                   buttonStyle={{ backgroundColor: '#111822' }}
                   titleStyle={{ color: '#FFA40B' }}
                 />
@@ -167,7 +167,7 @@ function UserStack() {
               <View style={{ paddingRight: 10 }}>
                 <Button
                   onPress={() => logout()}
-                  title="Logout"
+                  title="Salir"
                   buttonStyle={{ backgroundColor: '#111822' }}
                   titleStyle={{ color: '#FFA40B' }}
                 />
@@ -178,13 +178,52 @@ function UserStack() {
         <Stack.Screen
           name="ProfileScreen"
           component={ProfileScreen}
-          
+          options={{
+            headerTitle: 'Perfil',
+            headerRight: () => (
+              <View style={{ paddingRight: 10 }}>
+                <Button
+                  onPress={() => logout()}
+                  title="Salir"
+                  buttonStyle={{ backgroundColor: '#111822' }}
+                  titleStyle={{ color: '#FFA40B' }}
+                />
+              </View>
+            )
+          }}
         />
         <Stack.Screen
           name="EditProfileScreen"
           component={EditProfileScreen}
           options={{
-            headerTitle: 'Editar Perfil',
+            headerTitle: 'Editar perfil',
+            headerRight: () => (
+              <View style={{ paddingRight: 10 }}>
+                <Button
+                  onPress={() => logout()}
+                  title="Salir"
+                  buttonStyle={{ backgroundColor: '#111822' }}
+                  titleStyle={{ color: '#FFA40B' }}
+                />
+              </View>
+            )
+          }}
+        />
+        <Stack.Screen
+          name="DocumentScreen"
+          component={DocumentScreen}
+          options={{
+            headerTitle: 'Documentos',
+            headerRight: () => (
+              <View style={{ paddingRight: 10 }}>
+                <Button
+                  onPress={() => logout()}
+                  title="Salir"
+                  buttonStyle={{ backgroundColor: '#111822' }}
+                  titleStyle={{ color: '#FFA40B' }}
+                />
+              </View>
+            )
           }}
         />
         <Stack.Screen

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 
 //import 'firebase/auth';
 import { firebase } from "@react-native-firebase/messaging";
@@ -21,6 +22,7 @@ export const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 
 
@@ -28,7 +30,8 @@ const db = getFirestore(app);
 export {
   app,
   auth,
-  db
+  db,
+  storage
 };
 
 
