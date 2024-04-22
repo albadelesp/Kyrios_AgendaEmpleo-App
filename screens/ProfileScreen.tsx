@@ -7,6 +7,7 @@ import { Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native'; 
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface ProfileData {
   laboralExperience: string;
@@ -124,10 +125,18 @@ const ProfileScreen: React.FC = () => {
       </View>
 
       <Button
-        title="Descargar Información Personal"
-        buttonStyle={styles.buttonDownloadPDF}
-        titleStyle={{ color: '#111822' }}
+        titleStyle={{ color: '#111822', fontSize: 14}}
+        title="Descargar Informacion"
         onPress={handleDownloadPDF}
+        buttonStyle={{ backgroundColor: 'transparent' }}
+        icon = {
+               <Ionicons
+                name='download-outline'
+                size={30}
+                color="orange"
+                />
+                  }
+       iconPosition="top"
       />
     </View>
   );

@@ -10,6 +10,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { useNavigation } from '@react-navigation/native'; 
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
   const [refresher, setRefresher] = React.useState(false);
@@ -134,16 +135,7 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.containerOffers}>
-        <Button 
-          title="Añadir Oferta"
-          buttonStyle={styles.buttonNewOffer}
-          titleStyle={{ color: '#111822' }}
-          onPress={() => { navigation.navigate('NewOrEditOffer'); }}
-        />
-      </View>
-      
+    <View style={styles.container}>      
       <FlatList
         style={styles.offerList}
         data={offers}
@@ -216,10 +208,18 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
         }}
       />
       <Button
+        titleStyle={{ color: '#111822', fontSize: 14}}
         title="Descargar Ofertas"
-        buttonStyle={styles.buttonGoToChat}
-        titleStyle={{ color: '#111822' }}
         onPress={handleDownloadPDF}
+        buttonStyle={{ backgroundColor: 'transparent' }}
+        icon = {
+               <Ionicons
+                name='download-outline'
+                size={30}
+                color="orange"
+                />
+                  }
+       iconPosition="top"
       />
     </View>
   );

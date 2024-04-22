@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { getAuth, signOut } from 'firebase/auth';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 
 
 
@@ -19,6 +20,8 @@ import EditProfileScreen from '../screens/EditProfileScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+
 
 async function logout() {
   Alert.alert(
@@ -46,7 +49,8 @@ async function logout() {
 function TabNavigator(){
   return(
     <Tab.Navigator
-    screenOptions={{headerShown: false}}>
+    screenOptions={{headerShown: false}}
+    initialRouteName='Ofertas'>
       <Tab.Screen
         name = 'Perfil' component={ProfileScreen}
         options={{tabBarIcon: ({size})=> (
@@ -73,7 +77,7 @@ function TabNavigator(){
 }
 
 function UserStack() {
-
+  const navigation = useNavigation();
   return (
       <Stack.Navigator>
         <Stack.Screen
@@ -81,6 +85,7 @@ function UserStack() {
           component={OffersScreen}
           options={() => ({
             headerTitle: 'Registro de Ofertas',
+            headerTitleAlign: 'center',
             headerRight: () => (
               <View style={{ paddingRight: 10 }}>
                 <Button
@@ -88,6 +93,24 @@ function UserStack() {
                   title="Salir"
                   buttonStyle={{ backgroundColor: '#111822' }}
                   titleStyle={{ color: '#FFA40B' }}
+                />
+              </View>
+            ),
+            headerLeft: () => (
+              <View style={{ paddingLeft: 25 }}>
+                <Button
+                  title="Añadir"
+                  titleStyle={{ color: 'black', fontSize: 14 }}
+                  onPress={() => navigation.navigate('NewOrEditOffer')}
+                  buttonStyle={{ backgroundColor: 'transparent' }}
+                  icon = {
+                    <Ionicons
+                      name='add-circle-outline'
+                      size={24}
+                      color="orange"
+                    />
+                  }
+                  iconPosition="top"
                 />
               </View>
             )
