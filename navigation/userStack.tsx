@@ -16,6 +16,7 @@ import OfferDetailScreen from '../screens/OfferDetailScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
+import QuestionsScreen from '../screens/QuestionsScreen';
 
 
 const Stack = createStackNavigator();
@@ -69,6 +70,13 @@ function TabNavigator(){
         name = 'Chat' component={ChatScreen}
         options={{tabBarIcon: ({size})=> (
           <Ionicons name = "chatbubbles"
+          size = {size} color = '#FFA40B'/>
+        ),tabBarLabelStyle: { color: '#111822' }}}
+      />
+      <Tab.Screen
+        name = 'Preguntas' component={QuestionsScreen}
+        options={{tabBarIcon: ({size})=> (
+          <Ionicons name = "help-circle-outline"
           size = {size} color = '#FFA40B'/>
         ),tabBarLabelStyle: { color: '#111822' }}}
       />
@@ -154,7 +162,7 @@ function UserStack() {
           name="Chat"
           component={ChatScreen}
           options={{
-            headerTitle: 'Chat',
+            headerTitle: 'Mensajes',
             headerRight: () => (
               <View style={{ paddingRight: 10 }}>
                 <Button
@@ -170,9 +178,7 @@ function UserStack() {
         <Stack.Screen
           name="ProfileScreen"
           component={ProfileScreen}
-          options={{
-            headerTitle: 'Perfil',
-          }}
+          
         />
         <Stack.Screen
           name="EditProfileScreen"
@@ -180,6 +186,24 @@ function UserStack() {
           options={{
             headerTitle: 'Editar Perfil',
           }}
+        />
+        <Stack.Screen
+          name='QuestionsScreen'
+          component={QuestionsScreen}
+          options={{
+            headerTitle: 'Preguntas Comunes',
+            headerRight: () => (
+              <View style={{ paddingRight: 10 }}>
+                <Button
+                  onPress={() => logout()}
+                  title="Logout"
+                  buttonStyle={{ backgroundColor: '#111822' }}
+                  titleStyle={{ color: '#FFA40B' }}
+                />
+              </View>
+            )
+          }}
+
         />
       </Stack.Navigator>
   );
