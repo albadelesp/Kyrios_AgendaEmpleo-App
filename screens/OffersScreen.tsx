@@ -10,6 +10,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { useNavigation } from '@react-navigation/native'; 
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
   const [refresher, setRefresher] = React.useState(false);
@@ -65,6 +66,8 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
           interview_address: dict_offer_from_firestore.interview_address,
           interview_latitude: dict_offer_from_firestore.interview_latitude,
           interview_longitude: dict_offer_from_firestore.interview_longitude,
+          interview_state: dict_offer_from_firestore.interview_state,
+          interview_color: dict_offer_from_firestore.interview_color,
         }
         firebaseOffers.push(offer);
       });
@@ -132,16 +135,7 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.containerOffers}>
-        <Button 
-          title="Añadir Oferta"
-          buttonStyle={styles.buttonNewOffer}
-          titleStyle={{ color: '#111822' }}
-          onPress={() => { navigation.navigate('NewOrEditOffer'); }}
-        />
-      </View>
-      
+    <View style={styles.container}>      
       <FlatList
         style={styles.offerList}
         data={offers}
@@ -155,10 +149,16 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
         }}
         renderItem={({ item }) => {
           return (
-            <View style={{backgroundColor: '#bf8f3d', borderColor: 'black', borderWidth: 2, borderRadius: 5, padding: 20, marginBottom: 20}}>
+            <View style={{backgroundColor: '#FFC247', borderColor: 'black', borderWidth: 2, borderRadius: 5, padding: 20, marginBottom: 20}}>
               <Text style={{ fontSize: 22 }}>{item.position}</Text>
               <Text style={{ fontSize: 20 }}>{item.company}</Text>
               <Text style={{ fontSize: 18 }}>Fecha de inscripción: {item.registration_date}</Text>
+              <View style={{ flexDirection: 'row' }}>
+              <Text style={{ fontSize: 16 }}>Estado de la oferta: </Text>
+              <View style={{ backgroundColor: item.interview_color }}>
+              <Text style={{ fontSize: 16, fontStyle: 'italic' }}>{item.interview_state}</Text>
+              </View>
+              </View>
               <View style={{ marginTop: 20, flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Button
                   raised
@@ -207,19 +207,19 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
           )
         }}
       />
-      <Button 
-        title="Ir al Chat"
-        buttonStyle={styles.buttonGoToChat}
-        titleStyle={{ color: '#111822' }}
-        onPress={() => {
-          navigation.navigate('Chat')
-        }}
-      />
       <Button
+        titleStyle={{ color: '#111822', fontSize: 14}}
         title="Descargar Ofertas"
-        buttonStyle={styles.buttonGoToChat}
-        titleStyle={{ color: '#111822' }}
         onPress={handleDownloadPDF}
+        buttonStyle={{ backgroundColor: 'transparent' }}
+        icon = {
+               <Ionicons
+                name='download-outline'
+                size={30}
+                color="orange"
+                />
+                  }
+       iconPosition="top"
       />
     </View>
   );

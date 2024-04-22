@@ -8,8 +8,6 @@ import { db } from "../config/firebase";
 import { StackScreenProps } from '@react-navigation/stack';
 import { Offer } from '../models/Offer';
 import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
-import { Subscription } from 'expo-notifications';
 import { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
 
 const auth = getAuth();
@@ -69,10 +67,11 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#FF231F7C',
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC
       });
     }
   
-    if (Constants.isDevice) {
+    if (Platform.OS !== 'web') {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
       if (existingStatus !== 'granted') {
@@ -80,15 +79,15 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
         finalStatus = status;
       }
       if (finalStatus !== 'granted') {
-        alert('Failed to get push token for push notification!');
+        alert('Fallo al conseguir el token');
         return;
       }
       // Learn more about projectId:
       // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
-      token = (await Notifications.getExpoPushTokenAsync({ projectId: 'your-project-id' })).data;
+      token = (await Notifications.getExpoPushTokenAsync()).data;
       console.log(token);
     } else {
-      alert('Must use physical device for Push Notifications');
+      alert('Debe ser un dispositivo fisico para obtener el token');
     }
   
     return token;
@@ -118,13 +117,15 @@ const [value, setValue] = React.useState({
     contact_person: '',
     interview_address: '',
     interview_latitude: undefined,
-    interview_longitude: undefined
+    interview_longitude: undefined,
+    interview_state: '',
+    interview_color: ''
 });
   
 
 const offer : Offer = route?.params?.offer;
 const isEditMode = offer != undefined;
-const screenTitle = isEditMode ? 'Edición oferta' : 'Nueva oferta';
+const screenTitle = isEditMode ? 'Editar oferta' : 'Nueva oferta';
   
 const jobRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
 const interviewRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
@@ -144,7 +145,7 @@ useEffect(() => {
         console.error('El token de Expo Push es undefined');
       }
     } catch (error) {
-      console.error('Error al registrar para notificaciones:', error);
+      console.error('Error al registrar notificaciones:', error);
     }
   };
 
@@ -191,6 +192,8 @@ useEffect(() => {
       interview_address: offer.interview_address || '',
       interview_latitude: offer.interview_latitude,
       interview_longitude: offer.interview_longitude,
+      interview_state: offer.interview_state || '',
+      interview_color: offer.interview_color || ''
     });
   }
 }, [isEditMode, offer]);
@@ -219,6 +222,8 @@ useEffect(() => {
       interview_address: value.interview_address,
       interview_latitude: value.interview_latitude,
       interview_longitude: value.interview_longitude,
+      interview_state: value.interview_state,
+      interview_color: value.interview_color
     }
     
     let obj = JSON.parse(JSON.stringify(offer_obj));
@@ -235,9 +240,7 @@ useEffect(() => {
     const collection_name = `users/${user_uuid}/offers`;
     try {
       await addDoc(collection(db, collection_name), buildOfferObjectFromState());
-    
       //Notificación
-      
       await sendPushNotification(expoPushToken);
 
       navigation.navigate('Offers');
@@ -582,6 +585,35 @@ useEffect(() => {
             />
           </ScrollView>
 
+          <Text>
+            Estado de la entrevista:
+          </Text>
+          <Text style = {{color: value.interview_color}}>{value.interview_state}</Text>
+          <View style={styles.buttonscontainer}>
+          <Button
+          onPress={() => {setValue({...value, interview_state: "Programada", interview_color:'#48b93d'})}}
+          title = {"Programada"}
+          buttonStyle={styles.buttonProgramState}
+          />
+          <Button
+          onPress={() => {setValue({...value, interview_state: "En Proceso", interview_color:'#3d6ab9'})}}
+          title = {"En proceso"}
+          buttonStyle={styles.buttonProcessState}
+          />
+          </View>
+          <View style={styles.buttonscontainer}>
+          <Button
+          onPress={() => {setValue({...value, interview_state: "Finalizada", interview_color:'#eed238'})}}
+          title = {"Finalizada"}
+          buttonStyle={styles.buttonFinState}
+          />
+         <Button
+          onPress={() => {setValue({...value, interview_state: "Cancelada", interview_color:'#ff2e00'})}}
+          title = {"Cancelada"}
+          buttonStyle={styles.buttonCancState}
+          />
+          </View>  
+
           <View style={styles.buttons}>
             <Button
               onPress={() => {
@@ -664,7 +696,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     padding: 10,
     color: '#fff',
-    backgroundColor: '#D54826FF',
+    backgroundColor: '#d54826ff',
   },
 
   buttons: {
@@ -673,9 +705,31 @@ const styles = StyleSheet.create({
   },
 
   buttonSave: {
-    backgroundColor: '#FFA40B',
+    backgroundColor: '#ffa40b',
     width: '100%',
     marginTop: 50
+  },
+  buttonscontainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginBottom: 20,
+  },
+  buttonProgramState:
+  {
+    marginTop: 20,
+    backgroundColor: '#008d09'
+  },
+
+  buttonProcessState:{
+    marginTop: 20,
+    backgroundColor: '#019fb8'
+  },
+  buttonFinState:{
+    backgroundColor: '#d6d41d'
+  },
+  buttonCancState:{
+    backgroundColor: '#e91711'
   },
 
 });

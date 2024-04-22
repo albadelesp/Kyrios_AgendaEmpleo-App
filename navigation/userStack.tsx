@@ -1,9 +1,14 @@
 import React from 'react';
 import { Alert, View } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Button, TabView } from 'react-native-elements';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { getAuth, signOut } from 'firebase/auth';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
+
+
 
 import OffersScreen from '../screens/OffersScreen';
 import NewOrEditOfferScreen from '../screens/NewOrEditOfferScreen';
@@ -12,8 +17,12 @@ import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 import DocumentScreen from '../screens/DocumentScreen';
+import QuestionsScreen from '../screens/QuestionsScreen';
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+
 
 async function logout() {
   Alert.alert(
@@ -38,26 +47,53 @@ async function logout() {
   );
 }
 
-export default function UserStack() {
+function TabNavigator(){
+  return(
+    <Tab.Navigator
+    screenOptions={{headerShown: false}}
+    initialRouteName='Ofertas'>
+      <Tab.Screen
+        name = 'Perfil' component={ProfileScreen}
+        options={{tabBarIcon: ({size})=> (
+          <Ionicons name = "person"
+          size = {size} color = '#FFA40B'/>
+        ),tabBarLabelStyle: { color: '#111822' }}}
+      />
+      <Tab.Screen
+        name = 'Ofertas' component = {UserStack}
+        options={{tabBarIcon: ({size})=> (
+          <Ionicons name = "home"
+          size = {size} color = '#FFA40B'/>
+        ),tabBarLabelStyle: { color: '#111822' }}}
+      />
+      <Tab.Screen
+        name = 'Chat' component={ChatScreen}
+        options={{tabBarIcon: ({size})=> (
+          <Ionicons name = "chatbubbles"
+          size = {size} color = '#FFA40B'/>
+        ),tabBarLabelStyle: { color: '#111822' }}}
+      />
+      <Tab.Screen
+        name = 'Preguntas' component={QuestionsScreen}
+        options={{tabBarIcon: ({size})=> (
+          <Ionicons name = "help-circle-outline"
+          size = {size} color = '#FFA40B'/>
+        ),tabBarLabelStyle: { color: '#111822' }}}
+      />
+    </Tab.Navigator>
+  )
+}
 
+function UserStack() {
+  const navigation = useNavigation();
   return (
-    <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
           name="Offers"
           component={OffersScreen}
-          options={({ navigation }) => ({
-            headerTitle: 'Ofertas',
-            headerLeft: () => (
-              <View style={{ paddingLeft: 10 }}>
-                <Button
-                  onPress={() => navigation.navigate('ProfileScreen')}
-                  title="Perfil"
-                  type="clear"
-                  titleStyle={{ color: '#FFA40B' }}
-                />
-              </View>
-            ),
+          options={() => ({
+            headerTitle: 'Registro de Ofertas',
+            headerTitleAlign: 'center',
             headerRight: () => (
               <View style={{ paddingRight: 10 }}>
                 <Button
@@ -65,6 +101,24 @@ export default function UserStack() {
                   title="Salir"
                   buttonStyle={{ backgroundColor: '#111822' }}
                   titleStyle={{ color: '#FFA40B' }}
+                />
+              </View>
+            ),
+            headerLeft: () => (
+              <View style={{ paddingLeft: 25 }}>
+                <Button
+                  title="Añadir"
+                  titleStyle={{ color: 'black', fontSize: 14 }}
+                  onPress={() => navigation.navigate('NewOrEditOffer')}
+                  buttonStyle={{ backgroundColor: 'transparent' }}
+                  icon = {
+                    <Ionicons
+                      name='add-circle-outline'
+                      size={24}
+                      color="orange"
+                    />
+                  }
+                  iconPosition="top"
                 />
               </View>
             )
@@ -108,7 +162,7 @@ export default function UserStack() {
           name="Chat"
           component={ChatScreen}
           options={{
-            headerTitle: 'Chat',
+            headerTitle: 'Mensajes',
             headerRight: () => (
               <View style={{ paddingRight: 10 }}>
                 <Button
@@ -172,7 +226,32 @@ export default function UserStack() {
             )
           }}
         />
+        <Stack.Screen
+          name='QuestionsScreen'
+          component={QuestionsScreen}
+          options={{
+            headerTitle: 'Preguntas Comunes',
+            headerRight: () => (
+              <View style={{ paddingRight: 10 }}>
+                <Button
+                  onPress={() => logout()}
+                  title="Logout"
+                  buttonStyle={{ backgroundColor: '#111822' }}
+                  titleStyle={{ color: '#FFA40B' }}
+                />
+              </View>
+            )
+          }}
+
+        />
       </Stack.Navigator>
+  );
+}
+
+export default function User(){
+  return(
+    <NavigationContainer>
+      <TabNavigator/>  
     </NavigationContainer>
   );
 }

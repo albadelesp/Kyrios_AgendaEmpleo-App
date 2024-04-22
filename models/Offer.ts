@@ -17,4 +17,6 @@ export interface Offer {
   interview_address?: string;
   interview_latitude?: number;
   interview_longitude?: number;
+  interview_state: string;
+  interview_color: string;
 }

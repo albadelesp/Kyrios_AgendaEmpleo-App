@@ -9,6 +9,7 @@ import { AntDesign } from '@expo/vector-icons';
 import colors from '../colors';
 import { View, Text } from 'react-native';
 
+
 export default function Chat() {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const navigation = useNavigation();
