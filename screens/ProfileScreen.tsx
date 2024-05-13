@@ -132,7 +132,7 @@ const ProfileScreen: React.FC = () => {
             icon={{
               name: "edit",
               size: 25,
-              color: "white"
+              color: "orange"
             }}
             onPress={handleEditProfile}
           />
@@ -145,7 +145,7 @@ const ProfileScreen: React.FC = () => {
               name: "file",
               type: "font-awesome",
               size: 25,
-              color: "white"
+              color: "orange"
             }}
             onPress={handleNavigateToDocumentScreen}
           />

@@ -10,6 +10,7 @@ import { Offer } from '../models/Offer';
 import * as Notifications from 'expo-notifications';
 import { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
 
+
 const auth = getAuth();
 
 const today = new Date();
@@ -23,7 +24,7 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
-      shouldPlaySound: false,
+      shouldPlaySound: true,
       shouldSetBadge: false,
     }),
   });
@@ -36,9 +37,11 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
     const fechaActualObj = new Date(year, month, day);
     const dayBefore = new Date(fechaActualObj);
     dayBefore.setDate(fechaActualObj.getDate() - 1);
+
     console.log(day)
     const dayBeforeFormatted = dayBefore.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
     console.log(dayBeforeFormatted)
+    
     const segundos=Math.floor((dayBefore.getTime() - Date.now()) / 1000)
     console.log(segundos)
     Notifications.scheduleNotificationAsync({
@@ -85,7 +88,7 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
       // Learn more about projectId:
       // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
       token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
+      console.log( token);
     } else {
       alert('Debe ser un dispositivo fisico para obtener el token');
     }
@@ -434,6 +437,7 @@ useEffect(() => {
             autoComplete='off'
             containerStyle={styles.control}
             value={value.schedule}
+            placeholder={"8:00 - 16:00"}
             onChangeText={(text) => setValue({ ...value, schedule: text })}
           />
 
