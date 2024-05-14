@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
 import { Button } from 'react-native-elements';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation,useFocusEffect } from '@react-navigation/native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 import * as Print from 'expo-print';
@@ -25,7 +25,7 @@ const ProfileScreen: React.FC = () => {
 
   const navigation = useNavigation();
 
-  useEffect(() => {
+  useFocusEffect(() => {
     const fetchProfileData = async () => {
       try {
         if (auth.currentUser) {
@@ -52,9 +52,9 @@ const ProfileScreen: React.FC = () => {
         console.error('Error al obtener datos del perfil:', error);
       }
     };
-
+    
     fetchProfileData();
-  }, []);
+  },);
 
   const handleEditProfile = () => {
     navigation.navigate('EditProfileScreen');

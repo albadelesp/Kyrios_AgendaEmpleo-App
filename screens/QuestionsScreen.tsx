@@ -75,8 +75,8 @@ const QuestionScreen = () => {
           <Text style={styles.answerText}>{currentQuestion.answer}</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <Button title="Anterior" onPress={handlePreviousQuestion} disabled={currentQuestionIndex === 0} color={'white'} />
-          <Button title="Siguiente" onPress={handleNextQuestion} disabled={currentQuestionIndex === questionsData.length - 1 } color={'white'} />
+          <Button title="Anterior" onPress={handlePreviousQuestion} disabled={currentQuestionIndex === 0} color={'black'} />
+          <Button title="Siguiente" onPress={handleNextQuestion} disabled={currentQuestionIndex === questionsData.length - 1 } color={'black'} />
         </View>
         <Text style={styles.numberquestion}>
           Pregunta {currentQuestionIndex + 1} de {questionsData.length}

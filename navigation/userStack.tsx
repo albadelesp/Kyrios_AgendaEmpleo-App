@@ -109,7 +109,7 @@ function UserStack() {
                 <Button
                   title="Añadir"
                   titleStyle={{ color: 'black', fontSize: 14 }}
-                  onPress={() => navigation.navigate('NewOrEditOffer')}
+                  onPress={() => navigation.navigate('NewOrEditOfferScreen')}
                   buttonStyle={{ backgroundColor: 'transparent' }}
                   icon = {
                     <Ionicons
@@ -175,23 +175,7 @@ function UserStack() {
             )
           }}
         />
-        <Stack.Screen
-          name="ProfileScreen"
-          component={ProfileScreen}
-          options={{
-            headerTitle: 'Perfil',
-            headerRight: () => (
-              <View style={{ paddingRight: 10 }}>
-                <Button
-                  onPress={() => logout()}
-                  title="Salir"
-                  buttonStyle={{ backgroundColor: '#111822' }}
-                  titleStyle={{ color: '#FFA40B' }}
-                />
-              </View>
-            )
-          }}
-        />
+
         <Stack.Screen
           name="EditProfileScreen"
           component={EditProfileScreen}

@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, ScrollView, Text, View, Alert, TextInput } from 'react-native';
 import { Button } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { StackScreenProps } from '@react-navigation/stack';
+import ProfileScreen from './ProfileScreen';
+
 
 const auth = getAuth();
 
@@ -21,6 +23,25 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
       Alert.alert('Error', 'Por favor, introduce tu nombre y apellidos.');
       return;
     }
+    const handleSaveProfile = async () => {
+      try {
+        if (auth.currentUser) {
+          const userId = auth.currentUser.uid;
+          const profileDocRef = doc(db, 'users', userId);
+          await updateDoc(profileDocRef, {
+            name: profileData.name,
+            laboralExperience: profileData.laboralExperience,
+            previousJobs: profileData.previousJobs,
+            education: profileData.education,
+          });
+          console.log('Perfil actualizado correctamente');
+        } else {
+          console.log('El usuario no está autenticado');
+        }
+      } catch (error) {
+        console.error('Error al guardar perfil:', error);
+      }
+    };
 
     const userUUID = auth.currentUser?.uid;
     if (userUUID) {
