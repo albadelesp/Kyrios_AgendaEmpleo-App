@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { GiftedChat, IMessage } from 'react-native-gifted-chat';
+import { GiftedChat, IMessage, Bubble, BubbleProps } from 'react-native-gifted-chat';
 import { collection, addDoc, orderBy, query, onSnapshot } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { auth, db } from '../config/firebase';
@@ -42,46 +42,59 @@ export default function Chat() {
   }, []);
   
 
-  const onSend = useCallback((messages: IMessage[] = []) => {
+const onSend = useCallback((messages: IMessage[] = []) => {
     const newMessage = messages[0];
     const currentUser = auth.currentUser;
     if (currentUser) {
-      addDoc(collection(db, 'messages'), {
-        text: newMessage.text,
-        createdAt: new Date(),
-        user: {
-          _id: currentUser.uid,
-          name: currentUser.displayName, // Nombre del usuario
-        },
-      })
+        console.log("Sending message as:", currentUser.displayName || "Anónimo");
+        const displayName = currentUser.displayName || 'Anónimo';  // Ensure there's a fallback
+        addDoc(collection(db, 'messages'), {
+            text: newMessage.text,
+            createdAt: new Date(),
+            user: {
+                _id: currentUser.uid,
+                name: displayName,  // Store the displayName in Firestore
+            },
+        })
         .then(() => {
-          console.log('Message sent successfully');
+            console.log(`${displayName}: Message sent successfully`);
         })
         .catch((error) => {
-          console.error('Error sending message:', error);
+            console.error('Error sending message:', error);
         });
     }
-  }, []);  
+}, []); 
 
-  const renderBubble = (props: any) => {
-    return (
-      <View
-        style={{
-          ...props.containerStyle,
-          backgroundColor: props.position === 'left' ? '#E8E8E8' : '#6495ED',
-          borderRadius: 10, 
-          marginBottom: 5, 
-          maxWidth: '80%', 
-          paddingHorizontal: 10, 
-          paddingVertical: 5,
-          marginLeft: props.position === 'left' ? -20 : 10
-        }}
-      >
-        {props.position === 'left' && <Text style={{ color: '#333'}}>{props.currentMessage.user?.name}</Text>}
-        <Text style={{ color: props.position === 'left' ? '#333' : '#FFF', fontSize: 18 }}>{props.currentMessage.text}</Text>
+
+
+const renderBubble = (props: BubbleProps<IMessage>) => {
+  const isCurrentUser = props.currentMessage?.user?._id === auth.currentUser?.uid;
+
+  return (
+      <View>
+          <Text style={{
+              color: 'black', 
+              fontSize: 12, 
+              padding: 5,
+              textAlign: isCurrentUser ? 'right' : 'left'
+          }}>
+              {isCurrentUser ? (auth.currentUser?.displayName || 'Anónimo') : (props.currentMessage?.user?.name || 'Anónimo')}
+          </Text>
+          <Bubble
+              {...props}
+              wrapperStyle={{
+                  left: { backgroundColor: '#E8E8E8' },
+                  right: { backgroundColor: '#6495ED' }
+              }}
+              textStyle={{
+                  left: { color: '#000' },
+                  right: { color: '#fff' }
+              }}
+          />
       </View>
-    );
-  };
+  );
+};
+
   
 
   useLayoutEffect(() => {
@@ -100,7 +113,7 @@ export default function Chat() {
       showAvatarForEveryMessage={false}
       showUserAvatar={false}
       onSend={messages => onSend(messages)}
-      user={{ _id: auth?.currentUser?.uid || '' }}
+      user={{ _id: auth.currentUser?.uid || 'anonymous' }}
       renderBubble={renderBubble}
     />
   );

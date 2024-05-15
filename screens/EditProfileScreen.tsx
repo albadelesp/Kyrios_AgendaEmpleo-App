@@ -10,24 +10,18 @@ const auth = getAuth();
 
 const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
   const [profileData, setProfileData] = useState({
-    name: '',
     laboralExperience: '',
     previousJobs: '',
     education: '',
   });
 
   const saveProfileData = async () => {
-    if (!profileData.name) {
-      Alert.alert('Error', 'Por favor, introduce tu nombre y apellidos.');
-      return;
-    }
-
     const userUUID = auth.currentUser?.uid;
     if (userUUID) {
       const profileRef = doc(db, 'users', userUUID);
       try {
         await setDoc(profileRef, {
-          name: profileData.name,
+          // Remove name update to keep it unchangeable
           laboralExperience: profileData.laboralExperience,
           previousJobs: profileData.previousJobs,
           education: profileData.education,
@@ -51,7 +45,6 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
           if (profileSnapshot.exists()) {
             const data = profileSnapshot.data();
             setProfileData({
-              name: data.name || '',
               laboralExperience: data.laboralExperience || '',
               previousJobs: data.previousJobs || '',
               education: data.education || '',
@@ -71,12 +64,7 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.formContainer}>
           <Text style={styles.title}>Edita tus datos</Text>
-          <Text style={[styles.label, styles.nameLabel]}>Nombre y apellidos *</Text>
-          <TextInput
-            value={profileData.name}
-            onChangeText={(text) => setProfileData({ ...profileData, name: text })}
-            style={[styles.textInput, styles.smallTextInput]}
-          />
+          {/* Remove the name field */}
           <Text style={styles.label}>Experiencia Laboral</Text>
           <TextInput
             value={profileData.laboralExperience}
@@ -132,18 +120,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
-  nameLabel: {
-    marginBottom: 5,
-  },
   textInput: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     padding: 10,
     marginBottom: 20,
-  },
-  smallTextInput: {
-    height: 40,
   },
   largeTextInput: {
     minHeight: 120,

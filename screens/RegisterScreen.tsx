@@ -3,7 +3,7 @@ import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-n
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
 import { StackScreenProps } from '@react-navigation/stack';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { db } from '../config/firebase';
 import { doc, setDoc } from "firebase/firestore";
 // @ts-ignore
@@ -38,48 +38,58 @@ const RegisterScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
 
   async function signUp() {
     if (value.email === '' || value.password === '' || value.password === '') {
-      setValue({
-        ...value,
-        error: 'Email, contraseña y confirmación de contraseña son obligatorios.'
-      })
-      return;
+        setValue({
+            ...value,
+            error: 'Email, contraseña y confirmación de contraseña son obligatorios.'
+        })
+        return;
     }
 
     if (value.password.length < 6) {
-      setValue({
-        ...value,
-        error: 'La contraseña debe tener al menos 6 carácteres.'
-      })
-      return;
+        setValue({
+            ...value,
+            error: 'La contraseña debe tener al menos 6 caracteres.'
+        })
+        return;
     }
 
     if (value.password !== value.password_confirmation) {
-      setValue({
-        ...value,
-        error: 'La contraseña no coincide.'
-      })
-      return;
+        setValue({
+            ...value,
+            error: 'La contraseña no coincide.'
+        })
+        return;
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, value.email, value.password);
-      navigation.navigate('Login');
-    } catch (error) {
-      let msg = '';
-      if (error instanceof Error) {
-        msg = error.message;
-        if (msg.includes('auth/email-already-in-use')) {
-          msg = 'Este email ya está en uso';
+        const userCredential = await createUserWithEmailAndPassword(auth, value.email, value.password);
+        // Update the displayName after successful account creation
+        if (userCredential.user) {
+            await updateProfile(userCredential.user, {
+                displayName: value.displayName
+            });
+            console.log('Display Name set to:', userCredential.user.displayName);
+            // Optionally navigate or perform further actions here
+            navigation.navigate('Login');
+            // Consider creating a profile document after setting the displayName
+            createProfileDocument(userCredential.user.uid);
         }
-      } else {
-        msg = 'Error inesperado';
-      }
-      setValue({
-        ...value,
-        error: msg
-      })
+    } catch (error) {
+        let msg = '';
+        if (error instanceof Error) {
+            msg = error.message;
+            if (msg.includes('auth/email-already-in-use')) {
+                msg = 'Este email ya está en uso';
+            }
+        } else {
+            msg = 'Error inesperado';
+        }
+        setValue({
+            ...value,
+            error: msg
+        });
     }
-  }
+}
 
   return (
     <SafeAreaView style={styles.container}>
