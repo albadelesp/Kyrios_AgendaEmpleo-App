@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View, FlatList, Alert } from 'react-native';
+import React,{useState} from 'react';
+import { StyleSheet, Text, View, FlatList, Alert,Animated,TouchableOpacity,Image,Linking  } from 'react-native';
 import { Button } from 'react-native-elements';
 import { StackScreenProps } from '@react-navigation/stack';
 import { Offer } from '../models/Offer';
@@ -11,6 +11,9 @@ import { useNavigation } from '@react-navigation/native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import madrid from '../assets/madrid.png';
+import infojobs from '../assets/infojobs.png';
+import infoempleo from '../assets/infoempleo.png';
 
 const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
   const [refresher, setRefresher] = React.useState(false);
@@ -102,6 +105,7 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
         <p><strong>Requisitos educativos:</strong> ${offer.required_education}</p>
         <p><strong>Requisitos laborales:</strong> ${offer.required_experience}</p>
         <p><strong>Fecha de la entrevista:</strong> ${offer.interview_date}</p>
+        <p><strong>Hora de la entrevista:</strong> ${offer.interview_hour}</p>
         <p><strong>Persona de contacto:</strong> ${offer.contact_person}</p>
         <p><strong>Dirección de la entrevista:</strong> ${offer.interview_address}</p>
         </div>
@@ -133,6 +137,60 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
       console.error('Error al compartir PDF:', error);
     }
   };
+  const [icon_1] = useState(new Animated.Value(0));
+  const [icon_2] = useState(new Animated.Value(0));
+  const [icon_3] = useState(new Animated.Value(0));
+  const [icon_4] = useState(new Animated.Value(0));
+
+  const [pop, setPop] = useState(false);
+
+  const popIn = () => {
+    setPop(true);
+    Animated.timing(icon_1, {
+      toValue: 70,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+    Animated.timing(icon_2, {
+      toValue: 140,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+    Animated.timing(icon_3, {
+      toValue: 210,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+    Animated.timing(icon_4, {
+      toValue: 280,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }
+
+  const popOut = () => {
+    setPop(false);
+    Animated.timing(icon_1, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+    Animated.timing(icon_2, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+    Animated.timing(icon_3, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+    Animated.timing(icon_4, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }
 
   return (
     <View style={styles.container}>      
@@ -152,13 +210,13 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
             <View style={{backgroundColor: '#FFC247', borderColor: 'black', borderWidth: 2, borderRadius: 5, padding: 20, marginBottom: 20}}>
               <Text style={{ fontSize: 22 }}>{item.position}</Text>
               <Text style={{ fontSize: 20 }}>{item.company}</Text>
-              <Text style={{ fontSize: 18 }}>Fecha de inscripción: {item.registration_date}</Text>
-              <View style={{ flexDirection: 'row' }}>
-              <Text style={{ fontSize: 16 }}>Estado de la oferta: </Text>
-              <View style={{ backgroundColor: item.interview_color }}>
-              <Text style={{ fontSize: 16, fontStyle: 'italic' }}>{item.interview_state}</Text>
-              </View>
-              </View>
+              <Text style={{ fontSize: 18 }}>Fecha de la entrevista: {item.interview_date}</Text>
+                <View style={{ flexDirection: 'row' }}>
+                <Text style={{ fontSize: 16 }}>Estado de la oferta: </Text>
+                  <View style={{ backgroundColor: item.interview_color }}>
+                    <Text style={{ fontSize: 16, fontStyle: 'italic' }}>{item.interview_state}</Text>
+                  </View>
+                </View>
               <View style={{ marginTop: 20, flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Button
                   raised
@@ -207,20 +265,71 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
           )
         }}
       />
+     <View style={{ flexDirection: 'row', justifyContent: 'center', width: '100%', paddingHorizontal: 25 }}> 
       <Button
-        titleStyle={{ color: '#111822', fontSize: 14}}
-        title="Descargar Ofertas"
-        onPress={handleDownloadPDF}
-        buttonStyle={{ backgroundColor: 'transparent' }}
-        icon = {
-               <Ionicons
-                name='download-outline'
-                size={30}
-                color="orange"
-                />
-                  }
-       iconPosition="top"
-      />
+      titleStyle={{ color: '#111822', fontSize: 14}}
+      title="Descargar Ofertas"
+      onPress={handleDownloadPDF}
+      buttonStyle={{ backgroundColor: 'transparent' }}
+      icon = {
+        <Ionicons
+          name='download-outline'
+          size={30}
+          color="orange"
+        />
+      }
+      iconPosition="top"
+    />
+     <View style={{
+      flex: 1, alignItems: 'center', justifyContent: 'center' 
+    }}>
+      <Animated.View style={[styles.circle, { bottom: icon_1}]}>
+        <TouchableOpacity onPress = {() => {
+        Linking.openURL('https://oficinavirtualempleo.comunidad.madrid/AreaPublica/Ofertas/');
+      }}>
+          <Image source={madrid} style={{ width: 58, height:58}}/>
+        </TouchableOpacity>
+      </Animated.View>
+      <Animated.View style={[styles.circle, { bottom: icon_2}]}>
+        <TouchableOpacity onPress = {() => {
+        Linking.openURL('https://www.infojobs.net/');
+      }}>
+        <Image source={infojobs}  style={{ width: 58, height:58}}/>
+        </TouchableOpacity>
+      </Animated.View>
+      <Animated.View style={[styles.circle, { bottom: icon_3}]}>
+        <TouchableOpacity onPress = {() => {
+        Linking.openURL('https://www.linkedin.com');
+      }}>
+          <Ionicons name="logo-linkedin" size={35} color="#0e76a8" />
+        </TouchableOpacity>
+      </Animated.View>
+      <Animated.View style={[styles.circle, { bottom: icon_4}]}>
+        <TouchableOpacity onPress = {() => {
+        Linking.openURL('https://www.infoempleo.com/');
+      }}>
+          <Image source={infoempleo} style={{ width: 58, height:58}}/>
+        </TouchableOpacity>
+      </Animated.View>
+      
+    <Button
+      titleStyle={{ color: '#111822', fontSize: 14}}
+      title="Buscar Ofertas"
+      onPress={() => {
+        pop === false ? popIn() : popOut();
+      }}
+      buttonStyle={{ backgroundColor: 'white',marginLeft: 70,borderRadius: 40, }}
+      icon = {
+        <Ionicons
+          name='search-outline'
+          size={30}
+          color="orange"
+        />
+      }
+      iconPosition="top"
+    />
+    </View>
+    </View>
     </View>
   );
 }
@@ -273,7 +382,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFA40B',
     width: '100%',
     marginBottom: 20
-  }
+  },
+  circle: {
+    backgroundColor: 'transparent',
+    width: 60,
+    height: 60,
+    position: 'absolute',
+    bottom: 0,
+    right: 30,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+ }
 });
 
 export default OffersScreen;

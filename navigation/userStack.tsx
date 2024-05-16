@@ -91,7 +91,7 @@ function UserStack() {
         <Stack.Screen
           name="Offers"
           component={OffersScreen}
-          options={() => ({
+          options={({navigation}) => ({
             headerTitle: 'Registro de Ofertas',
             headerTitleAlign: 'center',
             headerRight: () => (
@@ -109,7 +109,7 @@ function UserStack() {
                 <Button
                   title="Añadir"
                   titleStyle={{ color: 'black', fontSize: 14 }}
-                  onPress={() => navigation.navigate('NewOrEditOfferScreen')}
+                  onPress={() => navigation.navigate('NewOrEditOffer')}
                   buttonStyle={{ backgroundColor: 'transparent' }}
                   icon = {
                     <Ionicons
