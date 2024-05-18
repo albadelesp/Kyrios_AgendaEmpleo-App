@@ -9,6 +9,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { Offer } from '../models/Offer';
 import * as Notifications from 'expo-notifications';
 import { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
+import { usePermissions } from 'react-native-permissions';
 
 
 const auth = getAuth();
@@ -29,21 +30,42 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
     }),
   });
   async function sendPushNotification(expoPushToken: string) {
+    if (!expoPushToken) {
+      console.error("Falta expoPushToken");
+      return;
+    }
     const fechaActual = value.interview_date.split('-');
     const day = parseInt(fechaActual[0], 10);
     const month = parseInt(fechaActual[1], 10) - 1; // Restamos 1 porque los meses en JavaScript van de 0 a 11
     const year = parseInt(fechaActual[2], 10);
-    
-    const fechaActualObj = new Date(year, month, day);
+    const interviewTime = value.interview_hour.split(':');
+    const hora = parseInt(interviewTime[0], 10);
+    const minutos = parseInt(interviewTime[1], 10);
+    const fechaActualObj = new Date(year, month, day, hora, minutos);
     const dayBefore = new Date(fechaActualObj);
     dayBefore.setDate(fechaActualObj.getDate() - 1);
-
-    console.log(day)
-    const dayBeforeFormatted = dayBefore.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    console.log(dayBeforeFormatted)
-    
-    const segundos=Math.floor((dayBefore.getTime() - Date.now()) / 1000)
-    console.log(segundos)
+  
+    const notificationTime = Math.floor((dayBefore.getTime() - Date.now()) / (1000 * 60));
+    if(notificationTime<0){
+      Notifications.scheduleNotificationAsync({
+        identifier:String(expoPushToken),
+        content:{
+          title:`Recuerda que en menos de 24h es tu entrevista para ${value.position} en ${value.company}`,
+          body:`En la dirección ${value.address}. ¡Buena suerte!`,
+          sound:true,
+          data:{
+            data:{ data: "goes here" }
+          }
+        }
+        ,
+        trigger:{
+          seconds:1,
+        },
+      })
+      .then(() => console.log("Notificación programada"))
+      .catch((error) => console.error(error));
+  }
+  else{
     Notifications.scheduleNotificationAsync({
       identifier:String(expoPushToken),
       content:{
@@ -56,10 +78,12 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
       }
       ,
       trigger:{
-        seconds:Math.floor((dayBefore.getTime() - Date.now()) / 1000)
-      }
-    }
-  )
+        seconds:notificationTime,
+      },
+    })
+    .then(() => console.log("Notificación programada"))
+    .catch((error) => console.error(error));
+  }
   }
   async function registerForPushNotificationsAsync() {
     let token;
@@ -69,7 +93,7 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
         name: 'default',
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
+        lightColor: '#FFA40B',
         lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC
       });
     }
@@ -85,8 +109,6 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
         alert('Fallo al conseguir el token');
         return;
       }
-      // Learn more about projectId:
-      // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
       token = (await Notifications.getExpoPushTokenAsync()).data;
       console.log( token);
     } else {
@@ -137,6 +159,16 @@ const [expoPushToken, setExpoPushToken] = React.useState('');
 const [notification, setNotification] = useState<Notifications.Notification | boolean>(false);
 const notificationListener = useRef();
 const responseListener = useRef();
+const [notificationPermission, setNotificationPermission] = useState('');
+
+useEffect(() => {
+  const getNotificationPermission = async () => {
+    const { status } = await Notifications.getPermissionsAsync();
+    setNotificationPermission(status);
+  };
+
+  getNotificationPermission();
+}, []);
 
 useEffect(() => {
   const registerForNotifications = async () => {
@@ -260,6 +292,7 @@ useEffect(() => {
     const offerDocRef = doc(db, offer_path);
     try {
       await updateDoc(offerDocRef, buildOfferObjectFromState());
+      await sendPushNotification(expoPushToken);
       navigation.navigate('Offers');
     } catch (e) {
       console.log(e);
@@ -637,9 +670,9 @@ useEffect(() => {
         </View>
 
         <View style={{ padding: 20 }}>
+
      
     </View>
-
       </ScrollView>
     </SafeAreaView>
   );
