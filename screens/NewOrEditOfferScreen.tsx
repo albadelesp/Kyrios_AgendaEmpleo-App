@@ -9,7 +9,6 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { Offer } from '../models/Offer';
 import * as Notifications from 'expo-notifications';
 import { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
-import { usePermissions } from 'react-native-permissions';
 
 
 const auth = getAuth();
@@ -45,12 +44,15 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
     const dayBefore = new Date(fechaActualObj);
     dayBefore.setDate(fechaActualObj.getDate() - 1);
   
-    const notificationTime = Math.floor((dayBefore.getTime() - Date.now()) / (1000 * 60));
-    if(notificationTime<0){
+    const notificationTime = Math.floor((dayBefore.getTime() - Date.now()) / 1000);
+    if(notificationTime <= 0){
+      const twoHoursBefore = new Date(fechaActualObj);
+      twoHoursBefore.setHours(fechaActualObj.getHours() - 2);
+      const timeToTwoHoursBefore = Math.floor((twoHoursBefore.getTime() - Date.now()) / 1000);
       Notifications.scheduleNotificationAsync({
         identifier:String(expoPushToken),
         content:{
-          title:`Recuerda que en menos de 24h es tu entrevista para ${value.position} en ${value.company}`,
+          title:`Recuerda que en menos de 2 horas es tu entrevista para ${value.position} en ${value.company}`,
           body:`En la dirección ${value.address}. ¡Buena suerte!`,
           sound:true,
           data:{
@@ -59,7 +61,7 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
         }
         ,
         trigger:{
-          seconds:1,
+          seconds: timeToTwoHoursBefore > 0 ? timeToTwoHoursBefore : 1,
         },
       })
       .then(() => console.log("Notificación programada"))
