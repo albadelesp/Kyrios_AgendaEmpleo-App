@@ -53,7 +53,7 @@ function TabNavigator(){
     screenOptions={{headerShown: false}}
     initialRouteName='Ofertas'>
       <Tab.Screen
-        name = 'Perfil' component={ProfileScreen}
+        name = 'Perfil' component={ProfileStack}
         options={{tabBarIcon: ({size})=> (
           <Ionicons name = "person"
           size = {size} color = '#FFA40B'/>
@@ -67,7 +67,7 @@ function TabNavigator(){
         ),tabBarLabelStyle: { color: '#111822' }}}
       />
       <Tab.Screen
-        name = 'Chat' component={ChatScreen}
+        name = 'Chat' component={ChatStack}
         options={{tabBarIcon: ({size})=> (
           <Ionicons name = "chatbubbles"
           size = {size} color = '#FFA40B'/>
@@ -229,6 +229,57 @@ function UserStack() {
 
         />
       </Stack.Navigator>
+  );
+}
+
+function ProfileStack() {
+  const navigation = useNavigation();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          headerTitle: 'Perfil',
+          headerTitleAlign: 'center',
+          headerRight: () => (
+            <View style={{ paddingRight: 10 }}>
+              <Button
+                onPress={() => logout()}
+                title="Salir"
+                buttonStyle={{ backgroundColor: '#111822' }}
+                titleStyle={{ color: '#FFA40B' }}
+              />
+            </View>
+          ),
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ChatStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+          headerTitle: 'Foro',
+          headerTitleAlign: 'center',
+          headerRight: () => (
+            <View style={{ paddingRight: 10 }}>
+              <Button
+                onPress={() => logout()}
+                title="Salir"
+                buttonStyle={{ backgroundColor: '#111822' }}
+                titleStyle={{ color: '#FFA40B' }}
+              />
+            </View>
+          ),
+        }}
+      />
+    </Stack.Navigator>
   );
 }
 

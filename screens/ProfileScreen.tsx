@@ -65,10 +65,15 @@ const ProfileScreen: React.FC = () => {
   };
 
   const handleDownloadPDF = async () => {
+    let nombre = '';
     try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        nombre = currentUser?.displayName || '';
+      }
       const htmlContent = `
         <h1>Nombre:</h1>
-        <p>${profileData.name}</p>
+        <p>${nombre}</p>
         <h1>Vida Laboral:</h1>
         <p>${profileData.laboralExperience}</p>
         <h1>Trabajos Anteriores:</h1>
