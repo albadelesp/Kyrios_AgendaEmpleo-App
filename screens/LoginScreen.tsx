@@ -35,6 +35,7 @@ const LoginScreen = () => {
           laboralExperience: '',
           previousJobs: '',
           education: '',
+          skills: '',
         });
         console.log('Documento de perfil creado para el usuario:', user.uid);
       }

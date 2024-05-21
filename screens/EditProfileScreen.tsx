@@ -13,6 +13,7 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
     laboralExperience: '',
     previousJobs: '',
     education: '',
+    skills: '',
   });
 
   const saveProfileData = async () => {
@@ -25,6 +26,7 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
           laboralExperience: profileData.laboralExperience,
           previousJobs: profileData.previousJobs,
           education: profileData.education,
+          skills: profileData.skills,
         });
         Alert.alert('Perfil actualizado correctamente');
         navigation.goBack();
@@ -48,6 +50,7 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
               laboralExperience: data.laboralExperience || '',
               previousJobs: data.previousJobs || '',
               education: data.education || '',
+              skills: data.skills || '',
             });
           }
         } catch (error) {
@@ -82,6 +85,13 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
           <TextInput
             value={profileData.education}
             onChangeText={(text) => setProfileData({ ...profileData, education: text })}
+            style={[styles.textInput, styles.largeTextInput]}
+            multiline
+          />
+          <Text style={styles.label}>Habilidades</Text>
+          <TextInput
+            value={profileData.skills}
+            onChangeText={(text) => setProfileData({ ...profileData, skills: text })}
             style={[styles.textInput, styles.largeTextInput]}
             multiline
           />

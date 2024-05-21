@@ -13,6 +13,7 @@ interface ProfileData {
   laboralExperience: string;
   previousJobs: string;
   education: string;
+  skills: string;
 }
 
 const ProfileScreen: React.FC = () => {
@@ -21,6 +22,7 @@ const ProfileScreen: React.FC = () => {
     laboralExperience: '',
     previousJobs: '',
     education: '',
+    skills: '',
   });
 
   const navigation = useNavigation();
@@ -41,6 +43,7 @@ const ProfileScreen: React.FC = () => {
               laboralExperience: data?.laboralExperience || '',
               previousJobs: data?.previousJobs || '',
               education: data?.education || '',
+              skills: data?.skills || '',
             });
           } else {
             console.log('El documento del perfil no existe');
@@ -80,6 +83,8 @@ const ProfileScreen: React.FC = () => {
         <p>${profileData.previousJobs}</p>
         <h1>Educación:</h1>
         <p>${profileData.education}</p>
+        <h1>Habilidades:</h1>
+        <p>${profileData.skills}</p>
       `;
 
       const options = {
@@ -114,6 +119,7 @@ const ProfileScreen: React.FC = () => {
           laboralExperience: profileData.laboralExperience,
           previousJobs: profileData.previousJobs,
           education: profileData.education,
+          skills: profileData.skills,
         });
         console.log('Perfil actualizado correctamente');
       } else {
@@ -170,6 +176,11 @@ const ProfileScreen: React.FC = () => {
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Educación</Text>
         <Text style={styles.sectionText}>{profileData.education}</Text>
+      </View>
+
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>Habilidades</Text>
+        <Text style={styles.sectionText}>{profileData.skills}</Text>
       </View>
   
       <Button
