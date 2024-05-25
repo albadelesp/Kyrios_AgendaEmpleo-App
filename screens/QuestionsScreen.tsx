@@ -58,7 +58,7 @@ const QuestionsScreen = () => {
       <View style={styles.questionContainer}>
         <Text style={styles.questionText}>{questions[currentQuestionIndex]}</Text>
       </View>
-      <Ionicons name={currentEmoticon} size={50} color="black" style={styles.emoticon} />
+      <Ionicons name={currentEmoticon} size={50} color="#F2EDE5" style={styles.emoticon} />
       <View style={styles.navigationContainer}>
         <TouchableOpacity 
           onPress={handlePrevPress} 
