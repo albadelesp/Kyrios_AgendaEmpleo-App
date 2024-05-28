@@ -13,7 +13,7 @@ const OfferDetailScreen: React.FC<StackScreenProps<any>> = ({ navigation, route 
       <ScrollView keyboardShouldPersistTaps="handled" style={styles.scrollView} contentContainerStyle={styles.scrollViewContentContainer}>
         <View style={{padding: 20, flex: 1, width: '100%'}}>
           <Text style={{fontSize: 22, textAlign: 'center', fontWeight: 'bold'}}>{offer.company}</Text>
-          <Text style={{marginTop:  ,fontSize: 20, textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic'}}>{offer.position}</Text>
+          <Text style={{marginTop: 10 ,fontSize: 20, textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic'}}>{offer.position}</Text>
           <Text style={{marginTop: 10,fontSize: 22, textAlign: 'center', fontWeight: 'bold'}}>{offer.interview_address}</Text>
          {/* <MapView 
             region={{
