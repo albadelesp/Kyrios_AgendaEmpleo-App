@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { Button } from 'react-native-elements';
 import { useNavigation,useFocusEffect } from '@react-navigation/native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -131,6 +131,7 @@ const ProfileScreen: React.FC = () => {
   };
 
   return (
+    <ScrollView>
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Tu información</Text>
@@ -198,6 +199,7 @@ const ProfileScreen: React.FC = () => {
        iconPosition="top"
       />
     </View>
+    </ScrollView>
   );
 };
 

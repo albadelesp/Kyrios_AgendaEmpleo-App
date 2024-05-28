@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { SafeAreaView, StyleSheet, ScrollView, Text, View, Alert, Platform } from 'react-native';
+import { SafeAreaView, StyleSheet, ScrollView, Text, FlatList, TextInput, View, Alert, Platform,TouchableOpacity  } from 'react-native';
 import { Input, Button, Switch } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'; // Corrección de importación
 import { collection, addDoc, updateDoc, doc } from "firebase/firestore"; 
 import { db } from "../config/firebase";
 import { StackScreenProps } from '@react-navigation/stack';
 import { Offer } from '../models/Offer';
 import * as Notifications from 'expo-notifications';
-import { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
+//import { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
+import axios from 'axios';
 
 
 const auth = getAuth();
@@ -154,8 +154,8 @@ const offer : Offer = route?.params?.offer;
 const isEditMode = offer != undefined;
 const screenTitle = isEditMode ? 'Editar oferta' : 'Nueva oferta';
   
-const jobRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
-const interviewRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
+//const jobRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
+//const interviewRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
 
 const [expoPushToken, setExpoPushToken] = React.useState('');
 const [notification, setNotification] = useState<Notifications.Notification | boolean>(false);
@@ -431,7 +431,6 @@ useEffect(() => {
     // devolvemos true si llegamos aqui
     return true;
   }
-
  
 
   return (
@@ -479,7 +478,15 @@ useEffect(() => {
           <Text>
             Lugar
           </Text>
-
+          <Input
+            autoComplete='off'
+            containerStyle={styles.control}
+            value={value.address}
+            placeholder={"Calle Figueroa, 14, Madrid, España"}
+            onChangeText={(text) => setValue({ ...value, address: text })}
+          />
+      
+{/*
           <ScrollView keyboardShouldPersistTaps="handled" horizontal={true} style={{ flex: 1, width: '100%', height: '100%' }}>
             <GooglePlacesAutocomplete
               ref={jobRefAddress}
@@ -502,7 +509,7 @@ useEffect(() => {
               }}
             />
           </ScrollView>
-
+            */}
           <Text>
             Fecha de inscripción
           </Text>
@@ -601,7 +608,15 @@ useEffect(() => {
             Lugar
           </Text>
 
-          <ScrollView keyboardShouldPersistTaps="handled" horizontal={true} style={{ flex: 1, width: '100%', height: '100%' }}>
+          <Input
+            autoComplete='off'
+            containerStyle={styles.control}
+            value={value.interview_address}
+            placeholder={"Calle Figueroa, 14, Madrid, España"}
+            onChangeText={(text) => setValue({ ...value, interview_address: text })}
+          />
+
+         {/* <ScrollView keyboardShouldPersistTaps="handled" horizontal={true} style={{ flex: 1, width: '100%', height: '100%' }}>
             <GooglePlacesAutocomplete
               ref={interviewRefAddress}
               placeholder="Introduce ubicación de la entrevista..."
@@ -622,7 +637,7 @@ useEffect(() => {
                 setValue({ ...value, interview_address: data.description, interview_latitude: details.geometry.location.lat, interview_longitude: details.geometry.location.lng })
               }}
             />
-          </ScrollView>
+            </ScrollView>*/}
 
           <Text>
             Estado de la entrevista:
@@ -682,7 +697,8 @@ useEffect(() => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    marginBottom: 20,
   },
 
   scrollView: {
@@ -724,6 +740,15 @@ const styles = StyleSheet.create({
     borderBottomColor: 'black',
     padding: 5,
     textAlign: 'center',
+  },
+  autocomplete: {
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    fontSize: 13,
+    marginTop: 5,
+    marginEnd: 5,
+    padding: 5,
+   
   },
 
   control: {
