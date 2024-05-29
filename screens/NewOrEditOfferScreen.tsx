@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { SafeAreaView, StyleSheet, ScrollView, Text, FlatList, TextInput, View, Alert, Platform,TouchableOpacity  } from 'react-native';
+import { SafeAreaView, StyleSheet, ScrollView, Text, View, Alert, Platform,  } from 'react-native';
 import { Input, Button, Switch } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
 import { collection, addDoc, updateDoc, doc } from "firebase/firestore"; 
@@ -9,6 +9,7 @@ import { Offer } from '../models/Offer';
 import * as Notifications from 'expo-notifications';
 //import { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
 import axios from 'axios';
+import Autocomplete from '../models/Autocomplete';
 
 
 const auth = getAuth();
@@ -153,6 +154,9 @@ const [value, setValue] = React.useState({
 const offer : Offer = route?.params?.offer;
 const isEditMode = offer != undefined;
 const screenTitle = isEditMode ? 'Editar oferta' : 'Nueva oferta';
+
+const [selectedAddress, setSelectedAddress] = useState(null);
+const [selectedInterviewAddress, setSelectedInterviewAddress] = useState(null);
   
 //const jobRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
 //const interviewRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
@@ -231,6 +235,16 @@ useEffect(() => {
       interview_longitude: offer.interview_longitude,
       interview_state: offer.interview_state || '',
       interview_color: offer.interview_color || ''
+    });
+    setSelectedAddress({
+      street: offer.job_address,
+      latitude: offer.job_latitude,
+      longitude: offer.job_longitude,
+    });
+    setSelectedInterviewAddress({
+      street: offer.interview_address,
+      latitude: offer.interview_latitude,
+      longitude: offer.interview_longitude,
     });
   }
 }, [isEditMode, offer]);
@@ -431,6 +445,27 @@ useEffect(() => {
     // devolvemos true si llegamos aqui
     return true;
   }
+
+
+  const handleSelectAddressJob = (calle) => {
+    setSelectedAddress(calle);
+    setValue({
+      ...value,
+      address: calle.street,
+      latitude: calle.latitude,
+      longitude: calle.longitude,
+    });
+  };
+
+  const handleSelectInterviewAddress = (calle) => {
+    setSelectedInterviewAddress(calle);
+    setValue({
+      ...value,
+      interview_address: calle.street,
+      interview_latitude: calle.latitude,
+      interview_longitude: calle.longitude,
+    });
+  };
  
 
   return (
@@ -478,13 +513,15 @@ useEffect(() => {
           <Text>
             Lugar
           </Text>
-          <Input
+
+          <Autocomplete onSelect={handleSelectAddressJob} />
+              {/* <Input
             autoComplete='off'
             containerStyle={styles.control}
             value={value.address}
             placeholder={"Calle Figueroa, 14, Madrid, España"}
             onChangeText={(text) => setValue({ ...value, address: text })}
-          />
+  />*/}
       
 {/*
           <ScrollView keyboardShouldPersistTaps="handled" horizontal={true} style={{ flex: 1, width: '100%', height: '100%' }}>
@@ -608,13 +645,14 @@ useEffect(() => {
             Lugar
           </Text>
 
-          <Input
+          <Autocomplete onSelect={handleSelectInterviewAddress} />
+         {/* <Input
             autoComplete='off'
             containerStyle={styles.control}
             value={value.interview_address}
             placeholder={"Calle Figueroa, 14, Madrid, España"}
             onChangeText={(text) => setValue({ ...value, interview_address: text })}
-          />
+          />*/}
 
          {/* <ScrollView keyboardShouldPersistTaps="handled" horizontal={true} style={{ flex: 1, width: '100%', height: '100%' }}>
             <GooglePlacesAutocomplete
@@ -794,6 +832,14 @@ const styles = StyleSheet.create({
   },
   buttonCancState:{
     backgroundColor: '#e91711'
+  },
+  addressContainer: {
+    marginTop: 20,
+    marginEnd: 20,
+  },
+  addressText: {
+    fontSize: 16,
+    marginBottom: 5,
   },
 
 });
