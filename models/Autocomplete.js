@@ -57,6 +57,7 @@ const Autocomplete = ({ onSelect }) => {
               <Text style={styles.resultItem}>{item.display_name}</Text>
             </TouchableOpacity>
           )}
+          scrollEnabled={false}
         />
       )}
     </View>
