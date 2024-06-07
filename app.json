@@ -2,7 +2,11 @@
   "expo": {
     "slug": "kyrios-agenda-empleo",
     "name": "kyrios-agenda-empleo",
-    "sdkVersion": "50.0.0"
+    "sdkVersion": "50.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/c0095b21-e685-40fa-a4f0-45a39851e16e"
+    },
+    "runtimeVersion": "1.0.0"
   },
   "name": "kyrios-agenda-empleo"
 }
