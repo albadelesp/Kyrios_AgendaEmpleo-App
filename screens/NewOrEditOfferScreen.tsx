@@ -54,11 +54,9 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
         identifier:String(expoPushToken),
         content:{
           title:`Recuerda que en menos de 2 horas es tu entrevista para ${value.position} en ${value.company}`,
-          body:`En la dirección ${value.address}. ¡Buena suerte!`,
+          body:`En la dirección ${value.interview_address}. ¡Buena suerte!`,
           sound:true,
-          data:{
-            data:{ data: "goes here" }
-          }
+          
         }
         ,
         trigger:{
@@ -73,7 +71,7 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
       identifier:String(expoPushToken),
       content:{
         title:`Recuerda mañana es tu entrevista para ${value.position} en ${value.company}`,
-        body:`En la dirección ${value.address}. ¡A por ello!`,
+        body:`En la dirección ${value.interview_address}. ¡A por ello!`,
         sound:true,
         data:{
           data:{ data: "goes here" }
@@ -513,6 +511,7 @@ useEffect(() => {
           <Text>
             Lugar
           </Text>
+        
 
           <Autocomplete onSelect={handleSelectAddressJob} />
               {/* <Input

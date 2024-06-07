@@ -29,7 +29,8 @@ export default {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package":"com.kyrios.agendadeempleo"
     },
     "web": {
       "favicon": "./assets/favicon.png"
