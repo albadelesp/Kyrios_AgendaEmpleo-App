@@ -147,22 +147,22 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
   const popIn = () => {
     setPop(true);
     Animated.timing(icon_1, {
-      toValue: 70,
+      toValue: 100,
       duration: 500,
       useNativeDriver: false,
     }).start();
     Animated.timing(icon_2, {
-      toValue: 140,
+      toValue: 170,
       duration: 500,
       useNativeDriver: false,
     }).start();
     Animated.timing(icon_3, {
-      toValue: 210,
+      toValue: 240,
       duration: 500,
       useNativeDriver: false,
     }).start();
     Animated.timing(icon_4, {
-      toValue: 280,
+      toValue: 310,
       duration: 500,
       useNativeDriver: false,
     }).start();

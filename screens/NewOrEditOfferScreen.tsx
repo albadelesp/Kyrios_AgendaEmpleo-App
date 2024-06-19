@@ -504,7 +504,7 @@ useEffect(() => {
             autoComplete='off'
             containerStyle={styles.control}
             value={value.schedule}
-            placeholder={"8:00 - 16:00"}
+            placeholder={"Formato  hh:mm - hh:mm"}
             onChangeText={(text) => setValue({ ...value, schedule: text })}
           />
 
@@ -555,7 +555,7 @@ useEffect(() => {
           <Input
             autoComplete='off'
             containerStyle={styles.control}
-            placeholder={"01-10-2022"}
+            placeholder={"Formato 01-10-2022"}
             value={value.registration_date}
             onChangeText={(text) => setValue({ ...value, registration_date: text.trim() })}
           />

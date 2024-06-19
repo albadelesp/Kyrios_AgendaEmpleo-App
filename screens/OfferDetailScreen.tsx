@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View, Linking } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { Offer } from '../models/Offer';
 import MapView, { Marker } from 'react-native-maps';
@@ -7,6 +7,11 @@ import MapView, { Marker } from 'react-native-maps';
 const OfferDetailScreen: React.FC<StackScreenProps<any>> = ({ navigation, route }) => {
 
   const offer : Offer = route?.params?.offer;
+  const handleMapPress = () => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${offer.interview_latitude},${offer.interview_longitude}`;
+
+    Linking.openURL(url).catch(err => console.error('No se puede acceder al mapa', err));
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -51,6 +56,7 @@ const OfferDetailScreen: React.FC<StackScreenProps<any>> = ({ navigation, route 
               longitudeDelta: 0.05
             }}
             style={{marginTop: 20, height: 225, width: '100%'}}
+            onPress={handleMapPress}
             >
             <Marker
               coordinate={{ latitude: offer.interview_latitude , longitude: offer.interview_longitude }}

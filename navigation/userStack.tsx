@@ -74,7 +74,7 @@ function TabNavigator(){
         ),tabBarLabelStyle: { color: '#111822' }}}
       />
       <Tab.Screen
-        name = 'Preguntas' component={QuestionsScreen}
+        name = 'Entrevistas' component={QuestionsScreen}
         options={{tabBarIcon: ({size})=> (
           <Ionicons name = "help-circle-outline"
           size = {size} color = '#FFA40B'/>
