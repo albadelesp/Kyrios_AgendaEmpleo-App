@@ -31,7 +31,14 @@ const Autocomplete = ({ onSelect }) => {
 
   const handleSelect = (item) => {
     const address = {
-      street:`${item.address.road || item.address.pedestrian || item.address.cycleway || item.address.footway || item.address.path || ''}, ${item.address.house_number || ''}, ${item.address.city || item.address.town || ''}, ${item.address.country || ''}`,
+      street: [
+        item.address.road || item.address.pedestrian || item.address.cycleway || item.address.footway || item.address.path,
+        item.address.house_number,
+        item.address.city || item.address.town,
+        item.address.country
+    ]
+    .filter(part => part !== null && part !== undefined && part !== '') // Filtrar partes vacías
+    .join(', '),
       latitude: parseFloat(item.lat),
       longitude: parseFloat(item.lon),
     };

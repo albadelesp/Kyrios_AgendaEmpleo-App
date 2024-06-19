@@ -129,8 +129,8 @@ const [value, setValue] = React.useState({
     company: '',
     schedule: '',
     address: '',
-    latitude: undefined,
-    longitude: undefined,
+    latitude: 40.4168,
+    longitude: -3.7038,
     registration_date: formatoCompleto ,
 
     mandatory_education: false,
@@ -142,8 +142,8 @@ const [value, setValue] = React.useState({
     interview_hour: '',
     contact_person: '',
     interview_address: '',
-    interview_latitude: undefined,
-    interview_longitude: undefined,
+    interview_latitude: 40.4168,
+    interview_longitude: -3.7038,
     interview_state: '',
     interview_color: ''
 });
@@ -511,7 +511,9 @@ useEffect(() => {
           <Text>
             Lugar
           </Text>
-        
+          <Text style={styles.control}>
+            {value.address}
+          </Text>
 
           <Autocomplete onSelect={handleSelectAddressJob} />
               {/* <Input
@@ -642,6 +644,9 @@ useEffect(() => {
 
           <Text>
             Lugar
+          </Text>
+          <Text style={styles.control}>
+            {value.interview_address}
           </Text>
 
           <Autocomplete onSelect={handleSelectInterviewAddress} />
