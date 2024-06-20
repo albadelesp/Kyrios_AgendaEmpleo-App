@@ -555,7 +555,7 @@ useEffect(() => {
           <Input
             autoComplete='off'
             containerStyle={styles.control}
-            placeholder={"Formato 01-10-2022"}
+            placeholder={"Formato dd-mm-aaaa"}
             value={value.registration_date}
             onChangeText={(text) => setValue({ ...value, registration_date: text.trim() })}
           />
@@ -614,7 +614,7 @@ useEffect(() => {
           <Input
             autoComplete='off'
             containerStyle={styles.control}
-            placeholder={"01-12-2022"}
+            placeholder={"Formato dd-mm-aaaa"}
             value={value.interview_date}
             onChangeText={(text) => setValue({ ...value, interview_date: text })}
           />
@@ -626,7 +626,7 @@ useEffect(() => {
           <Input
             autoComplete='off'
             containerStyle={styles.control}
-            placeholder={"10:00"}
+            placeholder={"Formato hh:mm"}
             value={value.interview_hour}
             onChangeText={(text) => setValue({ ...value, interview_hour: text })}
           />
