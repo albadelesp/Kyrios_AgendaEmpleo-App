@@ -67,12 +67,6 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.formContainer}>
           <Text style={styles.title}>Edita tus datos</Text>
-          <Text style={[styles.label, styles.nameLabel]}>Nombre y apellidos *</Text>
-          <TextInput
-            value={profileData.name}
-            onChangeText={(text) => setProfileData({ ...profileData, name: text })}
-            style={[styles.textInput, styles.smallTextInput]}
-          />
           <Text style={styles.label}>Experiencia Laboral</Text>
           <TextInput
             value={profileData.laboralExperience}
