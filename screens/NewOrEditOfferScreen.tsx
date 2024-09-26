@@ -1,14 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { SafeAreaView, StyleSheet, ScrollView, Text, View, Alert, Platform } from 'react-native';
+import { SafeAreaView, StyleSheet, ScrollView, Text, View, Alert, Platform,  } from 'react-native';
 import { Input, Button, Switch } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'; // Corrección de importación
 import { collection, addDoc, updateDoc, doc } from "firebase/firestore"; 
 import { db } from "../config/firebase";
 import { StackScreenProps } from '@react-navigation/stack';
 import { Offer } from '../models/Offer';
 import * as Notifications from 'expo-notifications';
-import { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
+//import { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
+import axios from 'axios';
+import Autocomplete from '../models/Autocomplete';
+
 
 const auth = getAuth();
 
@@ -23,29 +25,53 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
-      shouldPlaySound: false,
+      shouldPlaySound: true,
       shouldSetBadge: false,
     }),
   });
   async function sendPushNotification(expoPushToken: string) {
+    if (!expoPushToken) {
+      console.error("Falta expoPushToken");
+      return;
+    }
     const fechaActual = value.interview_date.split('-');
     const day = parseInt(fechaActual[0], 10);
     const month = parseInt(fechaActual[1], 10) - 1; // Restamos 1 porque los meses en JavaScript van de 0 a 11
     const year = parseInt(fechaActual[2], 10);
-    
-    const fechaActualObj = new Date(year, month, day);
+    const interviewTime = value.interview_hour.split(':');
+    const hora = parseInt(interviewTime[0], 10);
+    const minutos = parseInt(interviewTime[1], 10);
+    const fechaActualObj = new Date(year, month, day, hora, minutos);
     const dayBefore = new Date(fechaActualObj);
     dayBefore.setDate(fechaActualObj.getDate() - 1);
-    console.log(day)
-    const dayBeforeFormatted = dayBefore.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    console.log(dayBeforeFormatted)
-    const segundos=Math.floor((dayBefore.getTime() - Date.now()) / 1000)
-    console.log(segundos)
+  
+    const notificationTime = Math.floor((dayBefore.getTime() - Date.now()) / 1000);
+    if(notificationTime <= 0){
+      const twoHoursBefore = new Date(fechaActualObj);
+      twoHoursBefore.setHours(fechaActualObj.getHours() - 2);
+      const timeToTwoHoursBefore = Math.floor((twoHoursBefore.getTime() - Date.now()) / 1000);
+      Notifications.scheduleNotificationAsync({
+        identifier:String(expoPushToken),
+        content:{
+          title:`Recuerda que en menos de 2 horas es tu entrevista para ${value.position} en ${value.company}`,
+          body:`En la dirección ${value.interview_address}. ¡Buena suerte!`,
+          sound:true,
+          
+        }
+        ,
+        trigger:{
+          seconds: timeToTwoHoursBefore > 0 ? timeToTwoHoursBefore : 1,
+        },
+      })
+      .then(() => console.log("Notificación programada"))
+      .catch((error) => console.error(error));
+  }
+  else{
     Notifications.scheduleNotificationAsync({
       identifier:String(expoPushToken),
       content:{
         title:`Recuerda mañana es tu entrevista para ${value.position} en ${value.company}`,
-        body:`En la dirección ${value.address}. ¡A por ello!`,
+        body:`En la dirección ${value.interview_address}. ¡A por ello!`,
         sound:true,
         data:{
           data:{ data: "goes here" }
@@ -53,10 +79,12 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
       }
       ,
       trigger:{
-        seconds:Math.floor((dayBefore.getTime() - Date.now()) / 1000)
-      }
-    }
-  )
+        seconds:notificationTime,
+      },
+    })
+    .then(() => console.log("Notificación programada"))
+    .catch((error) => console.error(error));
+  }
   }
   async function registerForPushNotificationsAsync() {
     let token;
@@ -66,7 +94,7 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
         name: 'default',
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
+        lightColor: '#FFA40B',
         lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC
       });
     }
@@ -82,10 +110,8 @@ const NewOrDetailOfferScreen: React.FC<StackScreenProps<any>> = ({ navigation, r
         alert('Fallo al conseguir el token');
         return;
       }
-      // Learn more about projectId:
-      // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
       token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
+      console.log( token);
     } else {
       alert('Debe ser un dispositivo fisico para obtener el token');
     }
@@ -103,8 +129,8 @@ const [value, setValue] = React.useState({
     company: '',
     schedule: '',
     address: '',
-    latitude: undefined,
-    longitude: undefined,
+    latitude: 40.4168,
+    longitude: -3.7038,
     registration_date: formatoCompleto ,
 
     mandatory_education: false,
@@ -116,8 +142,8 @@ const [value, setValue] = React.useState({
     interview_hour: '',
     contact_person: '',
     interview_address: '',
-    interview_latitude: undefined,
-    interview_longitude: undefined,
+    interview_latitude: 40.4168,
+    interview_longitude: -3.7038,
     interview_state: '',
     interview_color: ''
 });
@@ -126,14 +152,27 @@ const [value, setValue] = React.useState({
 const offer : Offer = route?.params?.offer;
 const isEditMode = offer != undefined;
 const screenTitle = isEditMode ? 'Editar oferta' : 'Nueva oferta';
+
+const [selectedAddress, setSelectedAddress] = useState(null);
+const [selectedInterviewAddress, setSelectedInterviewAddress] = useState(null);
   
-const jobRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
-const interviewRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
+//const jobRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
+//const interviewRefAddress = useRef<GooglePlacesAutocompleteRef>(null);
 
 const [expoPushToken, setExpoPushToken] = React.useState('');
 const [notification, setNotification] = useState<Notifications.Notification | boolean>(false);
 const notificationListener = useRef();
 const responseListener = useRef();
+const [notificationPermission, setNotificationPermission] = useState('');
+
+useEffect(() => {
+  const getNotificationPermission = async () => {
+    const { status } = await Notifications.getPermissionsAsync();
+    setNotificationPermission(status);
+  };
+
+  getNotificationPermission();
+}, []);
 
 useEffect(() => {
   const registerForNotifications = async () => {
@@ -194,6 +233,16 @@ useEffect(() => {
       interview_longitude: offer.interview_longitude,
       interview_state: offer.interview_state || '',
       interview_color: offer.interview_color || ''
+    });
+    setSelectedAddress({
+      street: offer.job_address,
+      latitude: offer.job_latitude,
+      longitude: offer.job_longitude,
+    });
+    setSelectedInterviewAddress({
+      street: offer.interview_address,
+      latitude: offer.interview_latitude,
+      longitude: offer.interview_longitude,
     });
   }
 }, [isEditMode, offer]);
@@ -257,6 +306,7 @@ useEffect(() => {
     const offerDocRef = doc(db, offer_path);
     try {
       await updateDoc(offerDocRef, buildOfferObjectFromState());
+      await sendPushNotification(expoPushToken);
       navigation.navigate('Offers');
     } catch (e) {
       console.log(e);
@@ -394,6 +444,26 @@ useEffect(() => {
     return true;
   }
 
+
+  const handleSelectAddressJob = (calle) => {
+    setSelectedAddress(calle);
+    setValue({
+      ...value,
+      address: calle.street,
+      latitude: calle.latitude,
+      longitude: calle.longitude,
+    });
+  };
+
+  const handleSelectInterviewAddress = (calle) => {
+    setSelectedInterviewAddress(calle);
+    setValue({
+      ...value,
+      interview_address: calle.street,
+      interview_latitude: calle.latitude,
+      interview_longitude: calle.longitude,
+    });
+  };
  
 
   return (
@@ -434,13 +504,27 @@ useEffect(() => {
             autoComplete='off'
             containerStyle={styles.control}
             value={value.schedule}
+            placeholder={"Formato  hh:mm - hh:mm"}
             onChangeText={(text) => setValue({ ...value, schedule: text })}
           />
 
           <Text>
             Lugar
           </Text>
+          <Text style={styles.control}>
+            {value.address}
+          </Text>
 
+          <Autocomplete onSelect={handleSelectAddressJob} />
+              {/* <Input
+            autoComplete='off'
+            containerStyle={styles.control}
+            value={value.address}
+            placeholder={"Calle Figueroa, 14, Madrid, España"}
+            onChangeText={(text) => setValue({ ...value, address: text })}
+  />*/}
+      
+{/*
           <ScrollView keyboardShouldPersistTaps="handled" horizontal={true} style={{ flex: 1, width: '100%', height: '100%' }}>
             <GooglePlacesAutocomplete
               ref={jobRefAddress}
@@ -463,7 +547,7 @@ useEffect(() => {
               }}
             />
           </ScrollView>
-
+            */}
           <Text>
             Fecha de inscripción
           </Text>
@@ -471,7 +555,7 @@ useEffect(() => {
           <Input
             autoComplete='off'
             containerStyle={styles.control}
-            placeholder={"01-10-2022"}
+            placeholder={"Formato dd-mm-aaaa"}
             value={value.registration_date}
             onChangeText={(text) => setValue({ ...value, registration_date: text.trim() })}
           />
@@ -530,7 +614,7 @@ useEffect(() => {
           <Input
             autoComplete='off'
             containerStyle={styles.control}
-            placeholder={"01-12-2022"}
+            placeholder={"Formato dd-mm-aaaa"}
             value={value.interview_date}
             onChangeText={(text) => setValue({ ...value, interview_date: text })}
           />
@@ -542,7 +626,7 @@ useEffect(() => {
           <Input
             autoComplete='off'
             containerStyle={styles.control}
-            placeholder={"10:00"}
+            placeholder={"Formato hh:mm"}
             value={value.interview_hour}
             onChangeText={(text) => setValue({ ...value, interview_hour: text })}
           />
@@ -561,8 +645,20 @@ useEffect(() => {
           <Text>
             Lugar
           </Text>
+          <Text style={styles.control}>
+            {value.interview_address}
+          </Text>
 
-          <ScrollView keyboardShouldPersistTaps="handled" horizontal={true} style={{ flex: 1, width: '100%', height: '100%' }}>
+          <Autocomplete onSelect={handleSelectInterviewAddress} />
+         {/* <Input
+            autoComplete='off'
+            containerStyle={styles.control}
+            value={value.interview_address}
+            placeholder={"Calle Figueroa, 14, Madrid, España"}
+            onChangeText={(text) => setValue({ ...value, interview_address: text })}
+          />*/}
+
+         {/* <ScrollView keyboardShouldPersistTaps="handled" horizontal={true} style={{ flex: 1, width: '100%', height: '100%' }}>
             <GooglePlacesAutocomplete
               ref={interviewRefAddress}
               placeholder="Introduce ubicación de la entrevista..."
@@ -583,7 +679,7 @@ useEffect(() => {
                 setValue({ ...value, interview_address: data.description, interview_latitude: details.geometry.location.lat, interview_longitude: details.geometry.location.lng })
               }}
             />
-          </ScrollView>
+            </ScrollView>*/}
 
           <Text>
             Estado de la entrevista:
@@ -633,9 +729,9 @@ useEffect(() => {
         </View>
 
         <View style={{ padding: 20 }}>
+
      
     </View>
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -643,7 +739,8 @@ useEffect(() => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    marginBottom: 20,
   },
 
   scrollView: {
@@ -685,6 +782,15 @@ const styles = StyleSheet.create({
     borderBottomColor: 'black',
     padding: 5,
     textAlign: 'center',
+  },
+  autocomplete: {
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    fontSize: 13,
+    marginTop: 5,
+    marginEnd: 5,
+    padding: 5,
+   
   },
 
   control: {
@@ -730,6 +836,14 @@ const styles = StyleSheet.create({
   },
   buttonCancState:{
     backgroundColor: '#e91711'
+  },
+  addressContainer: {
+    marginTop: 20,
+    marginEnd: 20,
+  },
+  addressText: {
+    fontSize: 16,
+    marginBottom: 5,
   },
 
 });

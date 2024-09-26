@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { Button } from 'react-native-elements';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation,useFocusEffect } from '@react-navigation/native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 import * as Print from 'expo-print';
@@ -13,6 +13,7 @@ interface ProfileData {
   laboralExperience: string;
   previousJobs: string;
   education: string;
+  skills: string;
 }
 
 const ProfileScreen: React.FC = () => {
@@ -21,11 +22,12 @@ const ProfileScreen: React.FC = () => {
     laboralExperience: '',
     previousJobs: '',
     education: '',
+    skills: '',
   });
 
   const navigation = useNavigation();
 
-  useEffect(() => {
+  useFocusEffect(() => {
     const fetchProfileData = async () => {
       try {
         if (auth.currentUser) {
@@ -41,6 +43,7 @@ const ProfileScreen: React.FC = () => {
               laboralExperience: data?.laboralExperience || '',
               previousJobs: data?.previousJobs || '',
               education: data?.education || '',
+              skills: data?.skills || '',
             });
           } else {
             console.log('El documento del perfil no existe');
@@ -52,9 +55,9 @@ const ProfileScreen: React.FC = () => {
         console.error('Error al obtener datos del perfil:', error);
       }
     };
-
+    
     fetchProfileData();
-  }, []);
+  },);
 
   const handleEditProfile = () => {
     navigation.navigate('EditProfileScreen');
@@ -65,16 +68,23 @@ const ProfileScreen: React.FC = () => {
   };
 
   const handleDownloadPDF = async () => {
+    let nombre = '';
     try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        nombre = currentUser?.displayName || '';
+      }
       const htmlContent = `
         <h1>Nombre:</h1>
-        <p>${profileData.name}</p>
+        <p>${nombre}</p>
         <h1>Vida Laboral:</h1>
         <p>${profileData.laboralExperience}</p>
         <h1>Trabajos Anteriores:</h1>
         <p>${profileData.previousJobs}</p>
         <h1>Educación:</h1>
         <p>${profileData.education}</p>
+        <h1>Habilidades:</h1>
+        <p>${profileData.skills}</p>
       `;
 
       const options = {
@@ -109,6 +119,7 @@ const ProfileScreen: React.FC = () => {
           laboralExperience: profileData.laboralExperience,
           previousJobs: profileData.previousJobs,
           education: profileData.education,
+          skills: profileData.skills,
         });
         console.log('Perfil actualizado correctamente');
       } else {
@@ -120,6 +131,7 @@ const ProfileScreen: React.FC = () => {
   };
 
   return (
+    <ScrollView>
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Tu información</Text>
@@ -132,7 +144,7 @@ const ProfileScreen: React.FC = () => {
             icon={{
               name: "edit",
               size: 25,
-              color: "white"
+              color: "orange"
             }}
             onPress={handleEditProfile}
           />
@@ -145,7 +157,7 @@ const ProfileScreen: React.FC = () => {
               name: "file",
               type: "font-awesome",
               size: 25,
-              color: "white"
+              color: "orange"
             }}
             onPress={handleNavigateToDocumentScreen}
           />
@@ -166,6 +178,11 @@ const ProfileScreen: React.FC = () => {
         <Text style={styles.sectionTitle}>Educación</Text>
         <Text style={styles.sectionText}>{profileData.education}</Text>
       </View>
+
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>Habilidades</Text>
+        <Text style={styles.sectionText}>{profileData.skills}</Text>
+      </View>
   
       <Button
         titleStyle={{ color: '#111822', fontSize: 14}}
@@ -182,6 +199,7 @@ const ProfileScreen: React.FC = () => {
        iconPosition="top"
       />
     </View>
+    </ScrollView>
   );
 };
 

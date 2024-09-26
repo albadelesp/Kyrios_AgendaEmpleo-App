@@ -53,7 +53,7 @@ function TabNavigator(){
     screenOptions={{headerShown: false}}
     initialRouteName='Ofertas'>
       <Tab.Screen
-        name = 'Perfil' component={ProfileScreen}
+        name = 'Perfil' component={ProfileStack}
         options={{tabBarIcon: ({size})=> (
           <Ionicons name = "person"
           size = {size} color = '#FFA40B'/>
@@ -67,14 +67,14 @@ function TabNavigator(){
         ),tabBarLabelStyle: { color: '#111822' }}}
       />
       <Tab.Screen
-        name = 'Chat' component={ChatScreen}
+        name = 'Chat' component={ChatStack}
         options={{tabBarIcon: ({size})=> (
           <Ionicons name = "chatbubbles"
           size = {size} color = '#FFA40B'/>
         ),tabBarLabelStyle: { color: '#111822' }}}
       />
       <Tab.Screen
-        name = 'Preguntas' component={QuestionsScreen}
+        name = 'Entrevistas' component={QuestionsScreen}
         options={{tabBarIcon: ({size})=> (
           <Ionicons name = "help-circle-outline"
           size = {size} color = '#FFA40B'/>
@@ -91,7 +91,7 @@ function UserStack() {
         <Stack.Screen
           name="Offers"
           component={OffersScreen}
-          options={() => ({
+          options={({navigation}) => ({
             headerTitle: 'Registro de Ofertas',
             headerTitleAlign: 'center',
             headerRight: () => (
@@ -175,23 +175,7 @@ function UserStack() {
             )
           }}
         />
-        <Stack.Screen
-          name="ProfileScreen"
-          component={ProfileScreen}
-          options={{
-            headerTitle: 'Perfil',
-            headerRight: () => (
-              <View style={{ paddingRight: 10 }}>
-                <Button
-                  onPress={() => logout()}
-                  title="Salir"
-                  buttonStyle={{ backgroundColor: '#111822' }}
-                  titleStyle={{ color: '#FFA40B' }}
-                />
-              </View>
-            )
-          }}
-        />
+
         <Stack.Screen
           name="EditProfileScreen"
           component={EditProfileScreen}
@@ -245,6 +229,57 @@ function UserStack() {
 
         />
       </Stack.Navigator>
+  );
+}
+
+function ProfileStack() {
+  const navigation = useNavigation();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          headerTitle: 'Perfil',
+          headerTitleAlign: 'center',
+          headerRight: () => (
+            <View style={{ paddingRight: 10 }}>
+              <Button
+                onPress={() => logout()}
+                title="Salir"
+                buttonStyle={{ backgroundColor: '#111822' }}
+                titleStyle={{ color: '#FFA40B' }}
+              />
+            </View>
+          ),
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ChatStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+          headerTitle: 'Foro',
+          headerTitleAlign: 'center',
+          headerRight: () => (
+            <View style={{ paddingRight: 10 }}>
+              <Button
+                onPress={() => logout()}
+                title="Salir"
+                buttonStyle={{ backgroundColor: '#111822' }}
+                titleStyle={{ color: '#FFA40B' }}
+              />
+            </View>
+          ),
+        }}
+      />
+    </Stack.Navigator>
   );
 }
 

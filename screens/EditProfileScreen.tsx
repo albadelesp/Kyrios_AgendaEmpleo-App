@@ -13,6 +13,7 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
     laboralExperience: '',
     previousJobs: '',
     education: '',
+    skills: '',
   });
 
   const saveProfileData = async () => {
@@ -25,6 +26,7 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
           laboralExperience: profileData.laboralExperience,
           previousJobs: profileData.previousJobs,
           education: profileData.education,
+          skills: profileData.skills,
         });
         Alert.alert('Perfil actualizado correctamente');
         navigation.goBack();
@@ -34,7 +36,7 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
       }
     }
   };
-
+  
   useEffect(() => {
     const fetchProfileData = async () => {
       const userUUID = auth.currentUser?.uid;
@@ -48,6 +50,7 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
               laboralExperience: data.laboralExperience || '',
               previousJobs: data.previousJobs || '',
               education: data.education || '',
+              skills: data.skills || '',
             });
           }
         } catch (error) {
@@ -64,7 +67,12 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.formContainer}>
           <Text style={styles.title}>Edita tus datos</Text>
-          {/* Remove the name field */}
+          <Text style={[styles.label, styles.nameLabel]}>Nombre y apellidos *</Text>
+          <TextInput
+            value={profileData.name}
+            onChangeText={(text) => setProfileData({ ...profileData, name: text })}
+            style={[styles.textInput, styles.smallTextInput]}
+          />
           <Text style={styles.label}>Experiencia Laboral</Text>
           <TextInput
             value={profileData.laboralExperience}
@@ -86,6 +94,13 @@ const EditProfileScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
             style={[styles.textInput, styles.largeTextInput]}
             multiline
           />
+          <Text style={styles.label}>Habilidades</Text>
+          <TextInput
+            value={profileData.skills}
+            onChangeText={(text) => setProfileData({ ...profileData, skills: text })}
+            style={[styles.textInput, styles.largeTextInput]}
+            multiline
+          />
           <Button
             title="Guardar Cambios"
             onPress={saveProfileData}
@@ -102,6 +117,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   scrollView: {
     flexGrow: 1,
