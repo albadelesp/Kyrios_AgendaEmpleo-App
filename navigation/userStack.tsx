@@ -108,7 +108,7 @@ function UserStack() {
               <View style={{ paddingLeft: 25 }}>
                 <Button
                   title="Añadir"
-                  titleStyle={{ color: 'black', fontSize: 14 }}
+                  titleStyle={{ color: 'black', fontSize: 12 }}
                   onPress={() => navigation.navigate('NewOrEditOffer')}
                   buttonStyle={{ backgroundColor: 'transparent' }}
                   icon = {

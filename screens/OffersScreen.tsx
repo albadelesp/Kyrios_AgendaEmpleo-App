@@ -13,7 +13,7 @@ import * as Sharing from 'expo-sharing';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import madrid from '../assets/madrid.png';
 import infojobs from '../assets/infojobs.png';
-import infoempleo from '../assets/infoempleo.png';
+import xtalento from '../assets/xtalento.png';
 
 const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
   const [refresher, setRefresher] = React.useState(false);
@@ -306,9 +306,9 @@ const OffersScreen: React.FC<StackScreenProps<any>> = ({ navigation }) => {
       </Animated.View>
       <Animated.View style={[styles.circle, { bottom: icon_4}]}>
         <TouchableOpacity onPress = {() => {
-        Linking.openURL('https://www.infoempleo.com/');
+        Linking.openURL('https://www.portalento.es/');
       }}>
-          <Image source={infoempleo} style={{ width: 58, height:58}}/>
+          <Image source={xtalento} style={{ width: 58, height:58}}/>
         </TouchableOpacity>
       </Animated.View>
       
